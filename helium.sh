@@ -6,7 +6,7 @@ set -e
 VERSIONNAME="Helium v"
 VERSIONNUMBER="1.0"
 GREEN='\e[1;32m'
-RED='\e[;31m'
+RED='\e[1;31m'
 WHITE='\e[1m'
 NOCOLOR='\e[0m'
 
@@ -42,8 +42,8 @@ function checkVirt() {
 
 function checkOS() {
  	if [[ $(grep -w "ID" /etc/os-release | awk -F'=' '{print $2}') != "debian" ]] || [[ $(grep -w "ID" /etc/os-release | awk -F'=' '{print $2}') != "ubuntu" ]]; then
-        clear
-        header
+        	clear
+        	header
  		echo
  		echo -e ${RED}"Your OS is not supported. Please use Debian/Ubuntu"$NOCOLOR
  		echo ""
