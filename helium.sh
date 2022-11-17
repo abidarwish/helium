@@ -40,7 +40,9 @@ function checkVirt() {
 
 function checkOS() {
  	if [[ $(grep -w "ID_LIKE" /etc/os-release | awk -F'=' '{print $2}') != "debian" ]]; then
- 		echo ""
+        clear
+        header
+ 		echo
  		echo -e ${RED}"Your OS is not supported. Please use Debian/Ubuntu"$NOCOLOR
  		echo ""
  		exit 1
