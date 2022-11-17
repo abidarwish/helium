@@ -55,12 +55,12 @@ function initialCheck() {
 
 function install() {
     echo -e -n "Installing..."
-    echo -e ${GREEN}"done"${NOCOLOR}
     apt update
     apt install dnsmasq dnsutils
     mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
     wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
+    echo -e ${GREEN}"done"${NOCOLOR}
 }
 
 function listUpdate() {
@@ -74,6 +74,8 @@ function listUpdate() {
 
     systemctl restart dnsmasq
     echo -e -n "Updating hostnames list..."
+    echo -e ${GREEN}"done"${NOCOLOR}
+    sleep 1
     echo -e "$(cat ${dnsmasqHostFinalList} | wc -l) hostnames have been updated"
     echo
 }
