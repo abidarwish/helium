@@ -77,7 +77,6 @@ function listUpdate() {
     echo -e ${GREEN}"done"${NOCOLOR}
     sleep 1
     echo -e "$(cat ${dnsmasqHostFinalList} | wc -l) hostnames have been updated"
-    echo
 }
 
 initialCheck
