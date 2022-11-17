@@ -64,6 +64,7 @@ function install() {
 }
 
 function listUpdate() {
+    echo -e -n "Updating hostnames list..."
     > ${tempHostsList}
     while IFS= read -r line; do
         list_url=$(echo $line | cut -d '"' -f2)
@@ -73,7 +74,6 @@ function listUpdate() {
     cat ${tempHostsList} | sed '/^$/d' | sort | uniq > ${dnsmasqHostFinalList}
 
     systemctl restart dnsmasq
-    echo -e -n "Updating hostnames list..."
     echo -e ${GREEN}"done"${NOCOLOR}
     sleep 1
     echo -e "$(cat ${dnsmasqHostFinalList} | wc -l) hostnames have been updated"
