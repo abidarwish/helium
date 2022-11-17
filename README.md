@@ -4,6 +4,8 @@
 
 Helium is a dnsmasq installer autoscript. Helium will setup dnsmasq to block ads, tracker, malware, phishing, porn and many more.
 
+requirement : Debian/Ubuntu VPS
+
 To install, copy paste this command:
 
 ```
