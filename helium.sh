@@ -41,7 +41,7 @@ function checkVirt() {
 }
 
 function checkOS() {
- 	if [[ $(grep -w "ID_LIKE" /etc/os-release | awk -F'=' '{print $2}') != "debian" ]]; then
+ 	if [[ $(grep -w "ID" /etc/os-release | awk -F'=' '{print $2}') != "debian" ]] || [[ $(grep -w "ID" /etc/os-release | awk -F'=' '{print $2}') != "ubuntu" ]]; then
         clear
         header
  		echo
