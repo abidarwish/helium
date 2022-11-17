@@ -14,6 +14,8 @@ providers="/etc/dnsmasq/providers.txt"
 dnsmasqHostFinalList="/etc/dnsmasq/adblock.hosts"
 tempHostsList="/etc/dnsmasq/list.tmp"
 
+publicIP=$(wget -qO- ipv4.icanhazip.com)
+
 function header() {
 	echo -e $GREEN"$VERSIONNAME$VERSIONNUMBER" $NOCOLOR
 	echo -e $WHITE"by Abi Darwish" $NOCOLOR
@@ -61,6 +63,7 @@ function install() {
     apt install dnsmasq dnsutils
     mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
     wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
+    sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
     wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
     echo -e ${GREEN}"done"${NOCOLOR}
 }
