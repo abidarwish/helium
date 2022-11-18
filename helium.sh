@@ -4,7 +4,7 @@
 set -e
 
 VERSIONNAME="Helium v"
-VERSIONNUMBER="1.0"
+VERSIONNUMBER="1.1"
 GREEN='\e[1;32m'
 RED='\e[1;31m'
 WHITE='\e[1m'
@@ -59,13 +59,21 @@ function initialCheck() {
 
 function install() {
     echo -e -n "Installing..."
+    if [[ ! -e /etc/dnsmasq ]]; then
+    	mkdir -p /etc/dnsmasq
+    fi
     apt update
     apt install dnsmasq dnsutils
     mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
     wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
     wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
-    echo -e ${GREEN}"done"${NOCOLOR}
+    clear
+    header
+    echo
+    echo -e ${GREEN}"Installation completed"${NOCOLOR}
+    echo
+    read -p $' Press Enter to continue...'
 }
 
 function listUpdate() {
@@ -84,25 +92,42 @@ function listUpdate() {
     echo -e "$(cat ${dnsmasqHostFinalList} | wc -l) hostnames have been updated"
 }
 
-initialCheck
+function mainMenu() {
+	clear
+	header
+	echo
+	echo -e "What do you want to do?
+[1] Install Helium
+[2] Start Helium
+[3] Stop Helium
+[4] Update hostnames list
+[5] Uninstall Helium
+[6] Exit"
+	echo
+	read -p $' Enter option [1-6]: ' MENU_OPTION
+	case ${MENU_OPTION} in
+	1)
+		install
+		;;
+	2)
+	    	start
+	   	;;
+	3)
+		stop
+		;;
+   	4)
+		listUpdate
+		;;
+	5)
+		uninstall
+		;;
+	6)
+		exit 0
+		;;
+	*)
+	mainMenu
+	esac
+}
 
-if [[ -e /etc/dnsmasq.conf ]]; then
-    if [[ ! -e /etc/dnsmasq ]]; then
-        mkdir -p /etc/dnsmasq
-    fi
-    clear
-    header
-    echo
-    listUpdate
-    echo
-    exit 0
-else
-    if [[ ! -e /etc/dnsmasq ]]; then
-        mkdir -p /etc/dnsmasq
-    fi
-    clear
-    header
-    echo
-    install
-    listUpdate
-fi
+initialCheck
+mainMenu
