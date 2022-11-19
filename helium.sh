@@ -136,7 +136,23 @@ function uninstall() {
 	clear
 	header
 	echo
-	
+	read -p "Are you sure to uninstall Helium? [y/n]: " UNINSTALL
+	if [[ $UNINSTALL == "y" ]]; then
+		systemctl stop dnsmasq
+		systemctl disable dnsmasq
+		apt autoremove --purge dnsmasq 2>&1
+		rm -rf /etc/dnsmasq
+		echo -e -n "Uninstalling Helium..."
+		sleep 2
+		echo -e $GREEN"done"$NOCOLOR
+		echo
+		exit 0
+	else
+		echo -e "Helium is not removed"
+		echo
+		read -p "Press Enter to continue..."
+		mainMenu
+	fi
 }
 
 function listUpdate() {
@@ -196,4 +212,11 @@ function mainMenu() {
 }
 
 initialCheck
-mainMenu
+
+if [[ -e /etc/dnsmasq.conf ]]; then
+	mainMenu
+else
+	clear
+	header
+	install
+fi
