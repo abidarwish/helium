@@ -62,6 +62,7 @@ function install() {
     if [[ ! -e /etc/dnsmasq ]]; then
     	mkdir -p /etc/dnsmasq
     fi
+    cp /etc/resolv.conf /etc/resolv.conf.bak
     apt update
     apt install dnsmasq dnsutils
     mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
@@ -76,8 +77,60 @@ function install() {
     read -p $' Press Enter to continue...'
 }
 
+function start() {
+	clear
+	header
+	echo
+	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
+		echo -e "Helium is already running"
+		echo
+		read -p $' Press Enter to continue...'
+		mainMenu
+	fi
+	systemctl restart dnsmasq
+	sleep 2
+	echo -e -n "Starting Helium..."
+	echo -e $GREEN"done"$NOCOLOR
+	echo
+	read -p $' Press Enter to continue...'
+	mainMenu
+}
+
+function stop() {
+	clear
+	header
+	echo
+	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
+		echo -e $GREEN"Helium is running"$NOCOLOR
+		echo
+		read -p "Are you sure to stop Helium? [y/n]: " STOP
+		if [[ $STOP == "y" ]]; then
+			systemctl stop dnsmasq
+			echo -e -n "Stopping Helium..."
+			sleep 2
+			echo -e $GREEN"done"$NOCOLOR
+			echo
+			read -p "Press Enter to continue..."
+			mainMenu
+		else
+			echo -e "Operation cancelled"
+			echo
+			read -p "Press Enter to continue..."
+			mainMenu
+		fi
+	else
+		echo -e $GREEN"Helium is already stopped"$NOCOLOR
+		echo
+		read -p "Press Enter to continue..."
+		mainMenu
+	fi
+}
+
 function listUpdate() {
-    echo -e -n "Updating hostnames list..."
+    clear
+    header
+    echo
+    echo -e -n "Updating hostnames..."
     > ${tempHostsList}
     while IFS= read -r line; do
         list_url=$(echo $line | cut -d '"' -f2)
