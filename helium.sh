@@ -119,7 +119,7 @@ function stop() {
 			read -p "Press Enter to continue..."
 			mainMenu
 		else
-			echo -e "Operation cancelled"
+			echo -e "Helium is not stopped"
 			echo
 			read -p "Press Enter to continue..."
 			mainMenu
