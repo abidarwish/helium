@@ -63,6 +63,12 @@ function install() {
     	mkdir -p /etc/dnsmasq
     fi
     cp /etc/resolv.conf /etc/resolv.conf.bak
+    if [[ $(lsof -i :53 | grep -w -c "systemd-r") -ge "1" ]]; then
+    	systemctl disable systemd-resolved
+	systemctl stop systemd-resolved
+	unlink /etc/resolv.conf
+	echo nameserver 127.0.0.1 | tee /etc/resolv.conf
+    fi
     apt update
     apt install dnsmasq dnsutils
     mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
@@ -124,6 +130,10 @@ function stop() {
 		read -p "Press Enter to continue..."
 		mainMenu
 	fi
+}
+
+function uninstall() {
+	
 }
 
 function listUpdate() {
