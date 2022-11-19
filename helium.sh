@@ -133,6 +133,9 @@ function stop() {
 }
 
 function uninstall() {
+	clear
+	header
+	echo
 	
 }
 
