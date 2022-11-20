@@ -67,8 +67,8 @@ function install() {
     	systemctl disable systemd-resolved
 	systemctl stop systemd-resolved
 	unlink /etc/resolv.conf
-	echo nameserver 127.0.0.1 | tee /etc/resolv.conf
     fi
+    echo nameserver 127.0.0.1 | tee /etc/resolv.conf
     apt update
     apt install dnsmasq dnsutils
     mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
