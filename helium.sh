@@ -5,10 +5,10 @@ set -e
 
 VERSIONNAME="Helium v"
 VERSIONNUMBER="1.1"
-GREEN='\e[1;32m'
-RED='\e[1;31m'
-WHITE='\e[1m'
-NOCOLOR='\e[0m'
+GREEN="\e[1;32m"
+RED="\e[1;31m"
+WHITE="\e[1m"
+NOCOLOR="\e[0m"
 
 providers="/etc/dnsmasq/providers.txt"
 dnsmasqHostFinalList="/etc/dnsmasq/adblock.hosts"
@@ -80,7 +80,7 @@ function install() {
     echo
     echo -e ${GREEN}"Installation completed"${NOCOLOR}
     echo
-    read -p $' Press Enter to continue...'
+    read -p $'Press Enter to continue...'
 }
 
 function start() {
@@ -98,7 +98,7 @@ function start() {
 	echo -e -n "Starting Helium..."
 	echo -e $GREEN"done"$NOCOLOR
 	echo
-	read -p $' Press Enter to continue...'
+	read -p $'Press Enter to continue...'
 	mainMenu
 }
 
@@ -172,6 +172,9 @@ function listUpdate() {
     echo -e ${GREEN}"done"${NOCOLOR}
     sleep 1
     echo -e "$(cat ${dnsmasqHostFinalList} | wc -l) hostnames have been updated"
+    echo
+    read -p "Press Enter to continue..."
+    mainMenu
 }
 
 function mainMenu() {
@@ -185,7 +188,7 @@ function mainMenu() {
 [4] Uninstall Helium
 [5] Exit"
 	echo
-	read -p $' Enter option [1-6]: ' MENU_OPTION
+	read -p $'Enter option [1-6]: ' MENU_OPTION
 	case ${MENU_OPTION} in
 	1)
 	    	start
