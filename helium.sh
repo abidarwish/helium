@@ -214,6 +214,7 @@ if [[ -e /etc/dnsmasq.conf ]]; then
 else
 	clear
 	header
+        echo
 	install
         listUpdate
         mainMenu
