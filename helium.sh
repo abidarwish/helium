@@ -154,6 +154,7 @@ function changeDNS() {
             changeDNS
         fi
         sed -i "s/server=${oldDNS}/server=${DNS}/" /etc/dnsmasq.conf
+        systemctl restart dnsmasq
         sleep 1
         echo -e -n "DNS server has been changed to "
         echo -e $GREEN"$DNS"$NOCOLOR
