@@ -125,7 +125,7 @@ function stop() {
 			mainMenu
 		fi
 	else
-		echo -e $GREEN"Helium is already stopped"$NOCOLOR
+		echo -e $RED"Helium is already stopped"$NOCOLOR
 		echo
 		read -p "Press Enter to continue..."
 		mainMenu
@@ -179,31 +179,27 @@ function mainMenu() {
 	header
 	echo
 	echo -e "What do you want to do?
-[1] Install Helium
-[2] Start Helium
-[3] Stop Helium
-[4] Update hostnames list
-[5] Uninstall Helium
-[6] Exit"
+[1] Start Helium
+[2] Stop Helium
+[3] Update hostnames list
+[4] Uninstall Helium
+[5] Exit"
 	echo
 	read -p $' Enter option [1-6]: ' MENU_OPTION
 	case ${MENU_OPTION} in
 	1)
-		install
-		;;
-	2)
 	    	start
 	   	;;
-	3)
+	2)
 		stop
 		;;
-   	4)
+   	3)
 		listUpdate
 		;;
-	5)
+	4)
 		uninstall
 		;;
-	6)
+	5)
 		exit 0
 		;;
 	*)
@@ -219,4 +215,6 @@ else
 	clear
 	header
 	install
+        listUpdate
+        mainMenu
 fi
