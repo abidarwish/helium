@@ -75,7 +75,6 @@ function install() {
     wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
     wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
-    systemctl enable dnsmasq
     clear
     header
     echo
