@@ -212,7 +212,7 @@ function mainMenu() {
 
 initialCheck
 
-if [[ ! -z $(which dnsmasq) ]]; then
+if [[ ! -z $(which dnsmasq) ]] && [[ -e /etc/dnsmasq ]]; then
 	mainMenu
 else
 	clear
