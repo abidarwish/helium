@@ -9,5 +9,5 @@ requirement : Debian/Ubuntu VPS
 To install, copy paste this command:
 
 ```
-wget -q -O /usr/local/sbin/helium https://raw.githubusercontent.com/abidarwish/helium/main/helium.sh ; chmod +x /usr/local/sbin/helium ; helium
+rm -rf /usr/local/sbin/helium ; wget -q -O /usr/local/sbin/helium https://raw.githubusercontent.com/abidarwish/helium/main/helium.sh ; chmod +x /usr/local/sbin/helium ; helium
 ```
