@@ -4,7 +4,7 @@
 set -e
 
 VERSIONNAME="Helium v"
-VERSIONNUMBER="1.1"
+VERSIONNUMBER="1.2"
 GREEN="\e[1;32m"
 RED="\e[1;31m"
 WHITE="\e[1m"
