@@ -171,7 +171,8 @@ function listUpdate() {
     systemctl restart dnsmasq
     echo -e ${GREEN}"done"${NOCOLOR}
     sleep 1
-    echo -e "$(cat ${dnsmasqHostFinalList} | wc -l) hostnames have been updated"
+    echo -e -n $GREEN"$(cat ${dnsmasqHostFinalList} | wc -l)"$NOCOLOR
+    echo -e "hostnames have been updated"
     echo
     read -p "Press Enter to continue..."
     mainMenu
@@ -184,7 +185,7 @@ function mainMenu() {
 	echo -e "What do you want to do?
 [1] Start Helium
 [2] Stop Helium
-[3] Update hostnames list
+[3] Update hostnames
 [4] Uninstall Helium
 [5] Exit"
 	echo
