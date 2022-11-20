@@ -45,7 +45,7 @@ function checkOS() {
         	clear
         	header
  		echo
- 		echo -e ${RED}"Your OS is not supported. Please use Ubuntu"$NOCOLOR
+ 		echo -e ${RED}"Your OS is not supported. Please use Debian/Ubuntu"$NOCOLOR
  		echo ""
  		exit 1
 	fi
