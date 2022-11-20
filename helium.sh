@@ -68,7 +68,6 @@ function install() {
 	systemctl stop systemd-resolved
 	unlink /etc/resolv.conf
     fi
-    echo nameserver 127.0.0.1 | tee /etc/resolv.conf
     apt update
     apt install dnsmasq dnsutils
     mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
@@ -80,9 +79,8 @@ function install() {
         list_url=$(echo $line | cut -d '"' -f2)
         curl "${list_url}" 2> /dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" | awk -F' ' '!a[$NF]++ {gsub(/^/,"0.0.0.0 ",$NF) ; print $NF ; gsub(/^(127|0)\.0\.0\.(0|1)/,"::1",$NF) ; print $NF}' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' >> ${tempHostsList}
     done < ${providers}
-
     cat ${tempHostsList} | sed '/^$/d' | sort | uniq > ${dnsmasqHostFinalList}
-
+    echo nameserver 127.0.0.1 | tee /etc/resolv.conf
     systemctl restart dnsmasq
     clear
     header
