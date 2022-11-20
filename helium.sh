@@ -88,9 +88,9 @@ function start() {
 	header
 	echo
 	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
-		echo -e "Helium is already running"
+		echo -e $RED"Helium is already running"$NOCOLOR
 		echo
-		read -p $' Press Enter to continue...'
+		read -p $'Press Enter to continue...'
 		mainMenu
 	fi
 	systemctl restart dnsmasq
