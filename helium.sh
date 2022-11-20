@@ -76,12 +76,22 @@ function install() {
     wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
     wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
+    > ${tempHostsList}
+    while IFS= read -r line; do
+        list_url=$(echo $line | cut -d '"' -f2)
+        curl "${list_url}" 2> /dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" | awk -F' ' '!a[$NF]++ {gsub(/^/,"0.0.0.0 ",$NF) ; print $NF ; gsub(/^(127|0)\.0\.0\.(0|1)/,"::1",$NF) ; print $NF}' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' >> ${tempHostsList}
+    done < ${providers}
+
+    cat ${tempHostsList} | sed '/^$/d' | sort | uniq > ${dnsmasqHostFinalList}
+
+    systemctl restart dnsmasq
     clear
     header
     echo
     echo -e ${GREEN}"Installation completed"${NOCOLOR}
+    echo -e "Type \e[1;32mhelium\e[0m to start"
     echo
-    read -p $'Press Enter to continue...'
+    exit 0
 }
 
 function start() {
@@ -248,6 +258,4 @@ else
 	header
         echo
 	install
-        listUpdate
-        mainMenu
 fi
