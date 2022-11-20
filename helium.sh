@@ -160,6 +160,7 @@ function listUpdate() {
     header
     echo
     echo -e -n "Updating hostnames..."
+    wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
     > ${tempHostsList}
     while IFS= read -r line; do
         list_url=$(echo $line | cut -d '"' -f2)
