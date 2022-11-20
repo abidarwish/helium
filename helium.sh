@@ -58,7 +58,7 @@ function initialCheck() {
 }
 
 function install() {
-    echo -e -n "Installing..."
+    echo -e "Installing..."
     if [[ ! -e /etc/dnsmasq ]]; then
     	mkdir -p /etc/dnsmasq
     fi
@@ -68,8 +68,8 @@ function install() {
 	systemctl stop systemd-resolved
 	unlink /etc/resolv.conf
     fi
-    apt update
-    apt install dnsmasq dnsutils
+    apt update 2>&1
+    apt install -y dnsmasq dnsutils 2>&1
     mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
     wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
