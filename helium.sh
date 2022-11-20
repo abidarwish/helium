@@ -188,7 +188,7 @@ function mainMenu() {
 [4] Uninstall Helium
 [5] Exit"
 	echo
-	read -p $'Enter option [1-6]: ' MENU_OPTION
+	read -p $'Enter option [1-5]: ' MENU_OPTION
 	case ${MENU_OPTION} in
 	1)
 	    	start
