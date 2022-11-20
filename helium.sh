@@ -4,7 +4,7 @@
 set -e
 
 VERSIONNAME="Helium v"
-VERSIONNUMBER="1.0"
+VERSIONNUMBER="1.1"
 GREEN='\e[1;32m'
 RED='\e[1;31m'
 WHITE='\e[1m'
@@ -59,17 +59,107 @@ function initialCheck() {
 
 function install() {
     echo -e -n "Installing..."
+    if [[ ! -e /etc/dnsmasq ]]; then
+    	mkdir -p /etc/dnsmasq
+    fi
+    cp /etc/resolv.conf /etc/resolv.conf.bak
+    if [[ $(lsof -i :53 | grep -w -c "systemd-r") -ge "1" ]]; then
+    	systemctl disable systemd-resolved
+	systemctl stop systemd-resolved
+	unlink /etc/resolv.conf
+	echo nameserver 127.0.0.1 | tee /etc/resolv.conf
+    fi
     apt update
     apt install dnsmasq dnsutils
     mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
     wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
     wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
-    echo -e ${GREEN}"done"${NOCOLOR}
+    clear
+    header
+    echo
+    echo -e ${GREEN}"Installation completed"${NOCOLOR}
+    echo
+    read -p $' Press Enter to continue...'
+}
+
+function start() {
+	clear
+	header
+	echo
+	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
+		echo -e "Helium is already running"
+		echo
+		read -p $' Press Enter to continue...'
+		mainMenu
+	fi
+	systemctl restart dnsmasq
+	sleep 2
+	echo -e -n "Starting Helium..."
+	echo -e $GREEN"done"$NOCOLOR
+	echo
+	read -p $' Press Enter to continue...'
+	mainMenu
+}
+
+function stop() {
+	clear
+	header
+	echo
+	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
+		echo -e $GREEN"Helium is running"$NOCOLOR
+		echo
+		read -p "Are you sure to stop Helium? [y/n]: " STOP
+		if [[ $STOP == "y" ]]; then
+			systemctl stop dnsmasq
+			echo -e -n "Stopping Helium..."
+			sleep 2
+			echo -e $GREEN"done"$NOCOLOR
+			echo
+			read -p "Press Enter to continue..."
+			mainMenu
+		else
+			echo -e "Helium is not stopped"
+			echo
+			read -p "Press Enter to continue..."
+			mainMenu
+		fi
+	else
+		echo -e $GREEN"Helium is already stopped"$NOCOLOR
+		echo
+		read -p "Press Enter to continue..."
+		mainMenu
+	fi
+}
+
+function uninstall() {
+	clear
+	header
+	echo
+	read -p "Are you sure to uninstall Helium? [y/n]: " UNINSTALL
+	if [[ $UNINSTALL == "y" ]]; then
+		systemctl stop dnsmasq
+		systemctl disable dnsmasq
+		apt autoremove --purge dnsmasq 2>&1
+		rm -rf /etc/dnsmasq
+		echo -e -n "Uninstalling Helium..."
+		sleep 2
+		echo -e $GREEN"done"$NOCOLOR
+		echo
+		exit 0
+	else
+		echo -e "Helium is not removed"
+		echo
+		read -p "Press Enter to continue..."
+		mainMenu
+	fi
 }
 
 function listUpdate() {
-    echo -e -n "Updating hostnames list..."
+    clear
+    header
+    echo
+    echo -e -n "Updating hostnames..."
     > ${tempHostsList}
     while IFS= read -r line; do
         list_url=$(echo $line | cut -d '"' -f2)
@@ -84,25 +174,49 @@ function listUpdate() {
     echo -e "$(cat ${dnsmasqHostFinalList} | wc -l) hostnames have been updated"
 }
 
+function mainMenu() {
+	clear
+	header
+	echo
+	echo -e "What do you want to do?
+[1] Install Helium
+[2] Start Helium
+[3] Stop Helium
+[4] Update hostnames list
+[5] Uninstall Helium
+[6] Exit"
+	echo
+	read -p $' Enter option [1-6]: ' MENU_OPTION
+	case ${MENU_OPTION} in
+	1)
+		install
+		;;
+	2)
+	    	start
+	   	;;
+	3)
+		stop
+		;;
+   	4)
+		listUpdate
+		;;
+	5)
+		uninstall
+		;;
+	6)
+		exit 0
+		;;
+	*)
+	mainMenu
+	esac
+}
+
 initialCheck
 
 if [[ -e /etc/dnsmasq.conf ]]; then
-    if [[ ! -e /etc/dnsmasq ]]; then
-        mkdir -p /etc/dnsmasq
-    fi
-    clear
-    header
-    echo
-    listUpdate
-    echo
-    exit 0
+	mainMenu
 else
-    if [[ ! -e /etc/dnsmasq ]]; then
-        mkdir -p /etc/dnsmasq
-    fi
-    clear
-    header
-    echo
-    install
-    listUpdate
+	clear
+	header
+	install
 fi
