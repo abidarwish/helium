@@ -171,7 +171,7 @@ function listUpdate() {
     systemctl restart dnsmasq
     echo -e ${GREEN}"done"${NOCOLOR}
     sleep 1
-    echo -e -n $GREEN"$(cat ${dnsmasqHostFinalList} | wc -l)"$NOCOLOR
+    echo -e -n $GREEN"$(cat ${dnsmasqHostFinalList} | wc -l) "$NOCOLOR
     echo -e "hostnames have been updated"
     echo
     read -p "Press Enter to continue..."
