@@ -136,8 +136,12 @@ function changeDNS() {
         clear
         header
         echo
-        read -p "Proxy server IP address to bypass Netflix blocking: " DNS
+        echo -e "Proxy server IP address to bypass Netflix"
+        read -p "(press c to cancel): " DNS
         oldDNS=$(grep -E -w "^server" /etc/dnsmasq.conf | cut -d '=' -f2)
+        if [[ $DNS == "c" ]]; then
+            mainMenu
+        fi
         if [[ -z $DNS ]]; then
             changeDNS
         fi
@@ -205,7 +209,7 @@ function mainMenu() {
 [1] Start Helium
 [2] Stop Helium
 [3] Update hostnames
-[4] Change DNS
+[4] Bypass Netflix
 [5] Uninstall Helium
 [6] Exit"
 	echo
