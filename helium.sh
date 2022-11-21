@@ -1,10 +1,8 @@
 #!/bin/bash
 #script by Abi Darwish
 
-set -e
-
 VERSIONNAME="Helium v"
-VERSIONNUMBER="1.2"
+VERSIONNUMBER="1.3"
 GREEN="\e[1;32m"
 RED="\e[1;31m"
 WHITE="\e[1m"
@@ -18,7 +16,8 @@ publicIP=$(wget -qO- ipv4.icanhazip.com)
 
 function header() {
 	echo -e $GREEN"$VERSIONNAME$VERSIONNUMBER" $NOCOLOR
-	echo -e $WHITE"by Abi Darwish" $NOCOLOR
+	echo -e -n "by "
+	echo -e $WHITE"Abi Darwish" $NOCOLOR
 }
 
 function isRoot() {
@@ -42,8 +41,8 @@ function checkVirt() {
 
 function checkOS() {
  	if [[ $(grep -w "ID" /etc/os-release | awk -F'=' '{print $2}') -ne "debian" ]] || [[ $(grep -w "ID" /etc/os-release | awk -F'=' '{print $2}') -ne "ubuntu" ]]; then
-        	clear
-        	header
+        clear
+        header
  		echo
  		echo -e ${RED}"Your OS is not supported. Please use Debian/Ubuntu"$NOCOLOR
  		echo ""
@@ -58,34 +57,41 @@ function initialCheck() {
 }
 
 function install() {
-    echo -e "Installing..."
+    echo -e -n "Installing Helium..."
     if [[ ! -e /etc/dnsmasq ]]; then
     	mkdir -p /etc/dnsmasq
     fi
-    cp /etc/resolv.conf /etc/resolv.conf.bak
+    if [[ ! -e /etc/resolv.conf.bak ]]; then
+       cp /etc/resolv.conf /etc/resolv.conf.bak
+    fi
     if [[ $(lsof -i :53 | grep -w -c "systemd-r") -ge "1" ]]; then
     	systemctl disable systemd-resolved
-	systemctl stop systemd-resolved
-	unlink /etc/resolv.conf
+		systemctl stop systemd-resolved
+		unlink /etc/resolv.conf
     fi
-    apt update 2>&1
-    apt install -y dnsmasq dnsutils 2>&1
+    apt update > /dev/null 2>&1
+    apt install -y dnsmasq dnsutils > /dev/null 2>&1
     mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
     wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
     wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
+    echo -e $GREEN"done"$NOCOLOR
+	sleep 1
+	echo -e -n "Updating blocked hostnames..."
     > ${tempHostsList}
     while IFS= read -r line; do
         list_url=$(echo $line | cut -d '"' -f2)
-        curl "${list_url}" 2> /dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" | awk -F' ' '!a[$NF]++ {gsub(/^/,"0.0.0.0 ",$NF) ; print $NF ; gsub(/^(127|0)\.0\.0\.(0|1)/,"::1",$NF) ; print $NF}' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' >> ${tempHostsList}
+        curl "${list_url}" 2> /dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" >> ${tempHostsList}
     done < ${providers}
-    cat ${tempHostsList} | sed '/^$/d' | sort | uniq > ${dnsmasqHostFinalList}
-    echo nameserver 127.0.0.1 | tee /etc/resolv.conf
+    
+    grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >> ${tempHostsList}
+
+    cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq > ${dnsmasqHostFinalList}
+    echo "nameserver 127.0.0.1" > /etc/resolv.conf
     systemctl restart dnsmasq
-    clear
-    header
-    echo
-    echo -e ${GREEN}"Installation completed"${NOCOLOR}
+	echo -e $GREEN"done"$NOCOLOR
+	sleep 1
+    echo -e "Installation completed"
     echo -e "Type \e[1;32mhelium\e[0m to start"
     echo
     exit 0
@@ -154,7 +160,6 @@ function changeDNS() {
             changeDNS
         fi
         sed -i "s/server=${oldDNS}/server=${DNS}/" /etc/dnsmasq.conf
-        systemctl restart dnsmasq
         sleep 1
         echo -e -n "DNS server has been changed to "
         echo -e $GREEN"$DNS"$NOCOLOR
@@ -171,8 +176,9 @@ function uninstall() {
 	if [[ $UNINSTALL == "y" ]]; then
 		systemctl stop dnsmasq
 		systemctl disable dnsmasq
-		apt autoremove --purge dnsmasq 2>&1
+		apt remove -y dnsmasq > /dev/null 2>&1
 		rm -rf /etc/dnsmasq
+		mv /etc/resolv.conf.bak /etc/resolv.conf
 		echo -e -n "Uninstalling Helium..."
 		sleep 2
 		echo -e $GREEN"done"$NOCOLOR
@@ -190,21 +196,23 @@ function listUpdate() {
     clear
     header
     echo
-    echo -e -n "Updating hostnames..."
+    echo -e -n "Updating blocked hostnames..."
     wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
     > ${tempHostsList}
     while IFS= read -r line; do
         list_url=$(echo $line | cut -d '"' -f2)
-        curl "${list_url}" 2> /dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" | awk -F' ' '!a[$NF]++ {gsub(/^/,"0.0.0.0 ",$NF) ; print $NF ; gsub(/^(127|0)\.0\.0\.(0|1)/,"::1",$NF) ; print $NF}' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' >> ${tempHostsList}
+        curl "${list_url}" 2> /dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" >> ${tempHostsList}
     done < ${providers}
+    
+    grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >> ${tempHostsList}
 
-    cat ${tempHostsList} | sed '/^$/d' | sort | uniq > ${dnsmasqHostFinalList}
+    cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq > ${dnsmasqHostFinalList}
 
     systemctl restart dnsmasq
     echo -e ${GREEN}"done"${NOCOLOR}
     sleep 1
     echo -e -n $GREEN"$(cat ${dnsmasqHostFinalList} | wc -l) "$NOCOLOR
-    echo -e "hostnames have been updated"
+    echo -e "hostnames have been blocked"
     echo
     read -p "Press Enter to continue..."
     mainMenu
@@ -225,7 +233,7 @@ function mainMenu() {
 	read -p $'Enter option [1-6]: ' MENU_OPTION
 	case ${MENU_OPTION} in
 	1)
-	    	start
+	    start
 	   	;;
 	2)
 		stop
@@ -233,9 +241,9 @@ function mainMenu() {
    	3)
 		listUpdate
 		;;
-        4)
-                changeDNS
-                ;;
+    4)
+        changeDNS
+        ;;
 	5)
 		uninstall
 		;;
@@ -254,6 +262,6 @@ if [[ ! -z $(which dnsmasq) ]] && [[ -e /etc/dnsmasq ]]; then
 else
 	clear
 	header
-        echo
+    echo
 	install
 fi
