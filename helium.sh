@@ -95,6 +95,7 @@ function install() {
     echo -e "hostnames have been blocked"
 	sleep 1
     echo -e "Installation completed"
+	sleep 1
     echo -e "Type \e[1;32mhelium\e[0m to start"
     echo
     exit 0
