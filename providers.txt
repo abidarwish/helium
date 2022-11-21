@@ -1,6 +1,6 @@
 AdAway=https://adaway.org/hosts.txt"
 Ewpratten=https://raw.githubusercontent.com/Ewpratten/youtube_ad_blocklist/master/blocklist.txt"
-StevenBlack="https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts"
+StevenBlack=https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts"
 NoTracking=https://raw.githubusercontent.com/notracking/hosts-blocklists/master/hostnames.txt"
 SomeoneWhoCares=https://someonewhocares.org/hosts/zero/hosts"
 BadMojr=https://badmojr.gitlab.io/1hosts/Lite/adblock.txt"
