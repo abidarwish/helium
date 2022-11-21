@@ -1,5 +1,3 @@
-@@||airasia.com^$important
-@@||apiairasia.com^$important
 ||modyolo.com^$important
 ||an1.com^$important
 ||happymod.com^$important
@@ -31,8 +29,6 @@
 ||happymodpro.com^$important
 ||happymod.io^$important
 ||apk-mod.net^$important
-@@||unifi.com.my^$important
-@@||s.youtube.com^$important
 ||moddroid.co^$important
 ||rexdl.com^$important
 ||ivynjcxxqdnro.com^$important
@@ -71,5 +67,3 @@
 ||apk.fm^$important
 ||revdl.com^$important
 ||thinkkers.com^$important
-@@||hotstar.com^$important
-@@||id.google.com^$important
