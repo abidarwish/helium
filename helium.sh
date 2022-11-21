@@ -91,6 +91,9 @@ function install() {
     systemctl restart dnsmasq
 	echo -e $GREEN"done"$NOCOLOR
 	sleep 1
+    echo -e -n $GREEN"$(cat ${dnsmasqHostFinalList} | wc -l) "$NOCOLOR
+    echo -e "hostnames have been blocked"
+	sleep 1
     echo -e "Installation completed"
     echo -e "Type \e[1;32mhelium\e[0m to start"
     echo
