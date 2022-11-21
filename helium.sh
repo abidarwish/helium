@@ -201,6 +201,7 @@ function listUpdate() {
     header
     echo
     echo -e -n "Updating blocked hostnames..."
+    rm -rf ${providers}
     wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
     > ${tempHostsList}
     while IFS= read -r line; do
