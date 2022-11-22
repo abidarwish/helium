@@ -41,8 +41,8 @@ function checkVirt() {
 
 function checkOS() {
  	if [[ $(grep -w "ID" /etc/os-release | awk -F'=' '{print $2}') -ne "debian" ]] || [[ $(grep -w "ID" /etc/os-release | awk -F'=' '{print $2}') -ne "ubuntu" ]]; then
-        clear
-        header
+		clear
+        	header
  		echo
  		echo -e ${RED}"Your OS is not supported. Please use Debian/Ubuntu"$NOCOLOR
  		echo ""
@@ -57,48 +57,48 @@ function initialCheck() {
 }
 
 function install() {
-    echo -e -n "Installing Helium..."
-    if [[ ! -e /etc/dnsmasq ]]; then
-    	mkdir -p /etc/dnsmasq
-    fi
-    if [[ ! -e /etc/resolv.conf.bak ]]; then
-       cp /etc/resolv.conf /etc/resolv.conf.bak
-    fi
-    if [[ $(lsof -i :53 | grep -w -c "systemd-r") -ge "1" ]]; then
-    	systemctl disable systemd-resolved
+	echo -e -n "Installing Helium..."
+    	if [[ ! -e /etc/dnsmasq ]]; then
+    		mkdir -p /etc/dnsmasq
+	fi
+    	if [[ ! -e /etc/resolv.conf.bak ]]; then
+       		cp /etc/resolv.conf /etc/resolv.conf.bak
+    	fi
+    	if [[ $(lsof -i :53 | grep -w -c "systemd-r") -ge "1" ]]; then
+    		systemctl disable systemd-resolved
 		systemctl stop systemd-resolved
 		unlink /etc/resolv.conf
-    fi
-    apt update > /dev/null 2>&1
-    apt install -y dnsmasq dnsutils > /dev/null 2>&1
-    mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
-    wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
-    sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
-    wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
-    echo -e $GREEN"done"$NOCOLOR
+    	fi
+    	apt update > /dev/null 2>&1
+    	apt install -y dnsmasq dnsutils > /dev/null 2>&1
+    	mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
+    	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
+    	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
+    	wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
+    	echo -e $GREEN"done"$NOCOLOR
 	sleep 1
 	echo -e -n "Updating blocked hostnames..."
-    > ${tempHostsList}
-    while IFS= read -r line; do
-        list_url=$(echo $line | cut -d '"' -f2)
-        curl "${list_url}" 2> /dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" >> ${tempHostsList}
-    done < ${providers}
+    	> ${tempHostsList}
+    	while IFS= read -r line; do
+        	list_url=$(echo $line | cut -d '"' -f2)
+        	curl "${list_url}" 2> /dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" >> ${tempHostsList}
+    	done < ${providers}
     
-    grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >> ${tempHostsList}
+    	grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >> ${tempHostsList}
 
-    cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq > ${dnsmasqHostFinalList}
-    echo "nameserver 127.0.0.1" > /etc/resolv.conf
-    systemctl restart dnsmasq
+    	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq > ${dnsmasqHostFinalList}
+    	echo "nameserver 127.0.0.1" > /etc/resolv.conf
+    	systemctl restart dnsmasq
 	echo -e $GREEN"done"$NOCOLOR
 	sleep 1
-    echo -e -n $GREEN"$(cat ${dnsmasqHostFinalList} | wc -l) "$NOCOLOR
-    echo -e "hostnames have been blocked"
+    	echo -e -n $GREEN"$(cat ${dnsmasqHostFinalList} | wc -l) "$NOCOLOR
+    	echo -e "hostnames have been blocked"
 	sleep 1
-    echo -e "Installation completed"
+    	echo -e "Installation completed"
 	sleep 1
-    echo -e "Type \e[1;32mhelium\e[0m to start"
-    echo
-    exit 0
+    	echo -e "Type \e[1;32mhelium\e[0m to start"
+    	echo
+    	exit 0
 }
 
 function start() {
@@ -151,7 +151,7 @@ function stop() {
 }
 
 function changeDNS() {
-        clear
+	clear
         header
         echo
         echo -e "Proxy server IP address to bypass Netflix"
@@ -197,30 +197,28 @@ function uninstall() {
 }
 
 function listUpdate() {
-    clear
-    header
-    echo
-    echo -e -n "Updating blocked hostnames..."
-    #rm -rf ${providers}
-    #wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
-    > ${tempHostsList}
-    while IFS= read -r line; do
-        list_url=$(echo $line | cut -d '"' -f2)
-        curl "${list_url}" 2> /dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" >> ${tempHostsList}
-    done < ${providers}
+    	clear
+    	header
+    	echo
+    	echo -e -n "Updating blocked hostnames..."
+    	> ${tempHostsList}
+    	while IFS= read -r line; do
+        	list_url=$(echo $line | cut -d '"' -f2)
+        	curl "${list_url}" 2> /dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" >> ${tempHostsList}
+    	done < ${providers}
     
-    grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >> ${tempHostsList}
+    	grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >> ${tempHostsList}
 
-    cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq > ${dnsmasqHostFinalList}
+    	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq > ${dnsmasqHostFinalList}
 
-    systemctl restart dnsmasq
-    echo -e ${GREEN}"done"${NOCOLOR}
-    sleep 1
-    echo -e -n $GREEN"$(cat ${dnsmasqHostFinalList} | wc -l) "$NOCOLOR
-    echo -e "hostnames have been blocked"
-    echo
-    read -p "Press Enter to continue..."
-    mainMenu
+    	systemctl restart dnsmasq
+    	echo -e ${GREEN}"done"${NOCOLOR}
+    	sleep 1
+    	echo -e -n $GREEN"$(cat ${dnsmasqHostFinalList} | wc -l) "$NOCOLOR
+    	echo -e "hostnames have been blocked"
+    	echo
+    	read -p "Press Enter to continue..."
+    	mainMenu
 }
 
 function mainMenu() {
@@ -238,7 +236,7 @@ function mainMenu() {
 	read -p $'Enter option [1-6]: ' MENU_OPTION
 	case ${MENU_OPTION} in
 	1)
-	    start
+		start
 	   	;;
 	2)
 		stop
@@ -246,9 +244,9 @@ function mainMenu() {
    	3)
 		listUpdate
 		;;
-    4)
-        changeDNS
-        ;;
+    	4)
+        	changeDNS
+        	;;
 	5)
 		uninstall
 		;;
@@ -267,6 +265,6 @@ if [[ ! -z $(which dnsmasq) ]] && [[ -e /etc/dnsmasq ]]; then
 else
 	clear
 	header
-    echo
+	echo
 	install
 fi
