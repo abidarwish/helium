@@ -68,3 +68,5 @@
 ||revdl.com^$important
 ||thinkkers.com^$important
 ||relax-porn.com^
+||appldnld.apple.com
+||mesu.apple.com
