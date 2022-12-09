@@ -64,7 +64,7 @@ function install() {
     	if [[ ! -e /etc/resolv.conf.bak ]]; then
        		cp /etc/resolv.conf /etc/resolv.conf.bak
     	fi
-    	if [[ $(lsof -i :53 | grep -w -c "systemd-r") -ge "1" ]]; then
+    	if [[ $(lsof -i :53 | head -n 2 | grep -w -c "systemd-r") -ge "1" ]]; then
     		systemctl disable systemd-resolved
 		systemctl stop systemd-resolved
 		unlink /etc/resolv.conf
