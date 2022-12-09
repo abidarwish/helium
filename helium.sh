@@ -67,7 +67,7 @@ function install() {
     	if [[ $(lsof -i :53 | grep -w -c "systemd-r") -ge "1" ]]; then
     		systemctl disable systemd-resolved
 		systemctl stop systemd-resolved
-		#unlink /etc/resolv.conf
+		unlink /etc/resolv.conf
     	fi
     	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
 	if [[ -z $(which dnsmasq) ]]; then
