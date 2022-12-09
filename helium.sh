@@ -65,12 +65,12 @@ function install() {
        		cp /etc/resolv.conf /etc/resolv.conf.bak
     	fi
     	if [[ $(lsof -i :53 | head -n 2 | grep -w -c "systemd-r") -ge "1" ]]; then
-    		systemctl disable systemd-resolved
-		systemctl stop systemd-resolved
-		unlink /etc/resolv.conf
+    		systemctl disable systemd-resolved > /dev/null 2>&1
+		systemctl stop systemd-resolved > /dev/null 2>&1
+		unlink /etc/resolv.conf > /dev/null 2>&1
     	fi
-    	apt update > /dev/null 2>&1
-    	apt install -y dnsmasq dnsutils > /dev/null 2>&1
+    	apt update
+    	apt install -y dnsmasq dnsutils
     	mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
     	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
