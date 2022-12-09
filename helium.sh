@@ -69,8 +69,7 @@ function install() {
 		systemctl stop systemd-resolved > /dev/null 2>&1
 		unlink /etc/resolv.conf > /dev/null 2>&1
     	fi
-    	apt update
-    	apt install -y dnsmasq dnsutils
+    	apt update && apt install -y dnsmasq dnsutils
     	mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
     	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
