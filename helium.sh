@@ -70,26 +70,17 @@ function install() {
 		#unlink /etc/resolv.conf
     	fi
     	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
+	if [[ -z $(which dnsmasq) ]]; then
+		install
+	fi
     	mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
     	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
     	wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
 	sleep 1
-	echo -e -n " Updating blocked hostnames..."
-    	> ${tempHostsList}
-    	while IFS= read -r line; do
-        	list_url=$(echo $line | cut -d '"' -f2)
-        	curl "${list_url}" 2> /dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" >> ${tempHostsList}
-    	done < ${providers}
-    	grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >> ${tempHostsList}
-	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq > ${dnsmasqHostFinalList}
-    	echo "nameserver 127.0.0.1" > /etc/resolv.conf
+	updateEngine
+	echo "nameserver 127.0.0.1" > /etc/resolv.conf
     	echo "nameserver 127.0.0.1" > /etc/resolvconf/resolv.conf.d/original
-    	systemctl restart dnsmasq
-	echo -e $GREEN"done"$NOCOLOR
-	sleep 1
-    	echo -e -n $GREEN" $(cat ${dnsmasqHostFinalList} | wc -l) "$NOCOLOR
-    	echo -e "hostnames have been blocked"
 	sleep 1
     	echo -e " Installation completed"
 	sleep 1
