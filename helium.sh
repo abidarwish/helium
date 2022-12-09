@@ -74,13 +74,17 @@ function install() {
 		install
 	fi
     	mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
+	rm -rf /etc/dnsmasq.conf
     	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
+	rm -rf ${providers}
     	wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
 	sleep 1
 	updateEngine
 	echo "nameserver 127.0.0.1" > /etc/resolv.conf
-    	echo "nameserver 127.0.0.1" > /etc/resolvconf/resolv.conf.d/original
+	sed -i -E "/^exit 0/d" /etc/rc.local
+    	echo -e 'echo "nameserver 127.0.0.1" > /etc/resolv.conf
+exit 0' >> /etc/rc.local
 	sleep 1
     	echo -e " Installation completed"
 	sleep 1
