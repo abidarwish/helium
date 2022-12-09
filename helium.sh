@@ -68,11 +68,9 @@ function install() {
     		systemctl disable systemd-resolved
 		systemctl stop systemd-resolved
 		unlink /etc/resolv.conf
+                echo "nameserver 1.1.1.1" > /etc/resolv.conf
     	fi
     	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
-	if [[ -z $(which dnsmasq) ]]; then
-		install
-	fi
     	mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
 	rm -rf /etc/dnsmasq.conf
     	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
