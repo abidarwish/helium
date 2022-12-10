@@ -80,6 +80,8 @@ function install() {
 	sleep 1
 	updateEngine
 	echo "nameserver 127.0.0.1" > /etc/resolv.conf
+        echo "nameserver 127.0.0.1" > /etc/resolvconf/resolv.conf.d/head
+        > /etc/resolvconf/resolv.conf.d/original
 	#sed -i -E "/^exit 0/d" /etc/rc.local
     	#echo -e 'echo "nameserver 127.0.0.1" > /etc/resolv.conf
 #exit 0' >> /etc/rc.local
