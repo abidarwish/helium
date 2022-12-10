@@ -79,9 +79,9 @@ function install() {
     	wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
 	sleep 1
 	updateEngine
+        > /etc/resolvconf/resolv.conf.d/original
 	echo "nameserver 127.0.0.1" > /etc/resolv.conf
         echo "nameserver 127.0.0.1" > /etc/resolvconf/resolv.conf.d/head
-        > /etc/resolvconf/resolv.conf.d/original
 	#sed -i -E "/^exit 0/d" /etc/rc.local
     	#echo -e 'echo "nameserver 127.0.0.1" > /etc/resolv.conf
 #exit 0' >> /etc/rc.local
@@ -176,6 +176,8 @@ function uninstall() {
 		systemctl disable dnsmasq
 		apt remove -y dnsmasq > /dev/null 2>&1
 		rm -rf /etc/dnsmasq
+                > /etc/resolvconf/resolv.conf.d/original
+                > /etc/resolvconf/resolv.conf.d/head
 		mv /etc/resolv.conf.bak /etc/resolv.conf
 		echo -e -n " Uninstalling Helium..."
 		sleep 2
