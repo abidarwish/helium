@@ -327,16 +327,17 @@ function mainMenu() {
 	
 	if [[ $(systemctl is-active dnsmasq) == active ]]; then
         	printf " %-25s %1s \e[1;32m%7s\e[0m" "Dnsmasq" ":" "running"
+		printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Active since" ":" "$(systemctl status dnsmasq.service | grep -w "Active" | awk '{print $9,$10}')"
     	else
-        	printf "\n %-25s %1s \e[1;31m%7s\e[0m" "Dnsmasq" ":" "stopped"
+        	printf " %-25s %1s \e[1;31m%7s\e[0m" "Dnsmasq" ":" "stopped"
     	fi
-	printf "\n %-25s %1s \e[1;32m%'d\n\e[0m" "Blocked hostnames" ":" "$(systemctl status dnsmasq.service | grep addresses | tail -n 1 | awk '{print $9}')"
 	
      	NAMESERVER=$(grep -w -E "^server" /etc/dnsmasq.conf | head -n 1 | awk -F'=' '{print $2}')
      
-     	printf " %-25s %1s \e[1;32m%7s\e[0m" "Nameserver" ":" "$NAMESERVER"
-    
-    	echo
+     	printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Nameserver" ":" "$NAMESERVER"
+	
+	printf "\n %-25s %1s \e[1;32m%'d\n\e[0m" "Blocked hostnames" ":" "$(cat /etc/dnsmasq/adblock.hosts | wc -l)"
+	
     	echo
     
 	echo -e " \e[1mVPS Info\e[0m"
