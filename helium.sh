@@ -11,7 +11,6 @@ NOCOLOR="\e[0m"
 providers="/etc/dnsmasq/providers.txt"
 dnsmasqHostFinalList="/etc/dnsmasq/adblock.hosts"
 tempHostsList="/etc/dnsmasq/list.tmp"
-
 publicIP=$(wget -qO- ipv4.icanhazip.com)
 
 function header() {
@@ -32,7 +31,6 @@ function checkVirt() {
 		echo " OpenVZ is not supported"
 		exit 1
 	fi
-
 	if [ "$(systemd-detect-virt)" == "lxc" ]; then
 		echo " LXC is not supported (yet)."
 		exit 1
@@ -400,7 +398,6 @@ function mainMenu() {
 }
 
 initialCheck
-
 if [[ ! -z $(which dnsmasq) ]] && [[ -e /etc/dnsmasq ]]; then
 	mainMenu
 else
