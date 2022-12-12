@@ -332,10 +332,9 @@ function mainMenu() {
     	fi
      	NAMESERVER=$(grep -w -E "^server" /etc/dnsmasq.conf | head -n 1 | awk -F'=' '{print $2}')
      	printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Nameserver" ":" "$NAMESERVER"
-	printf "\n %-25s %1s \e[1;32m%'d\n\e[0m" "Blocked hostnames" ":" "$(cat /etc/dnsmasq/adblock.hosts | wc -l)"
+	printf "\n %-25s %1s \e[1;32m%'d\n\e[0m" "Blocked hostnames" ":" "$(cat ${dnsmasqHostFinalList} | wc -l)"
     	echo
 	echo -e " \e[1mVPS Info\e[0m"
-	SERVER_IP=$(ip -4 addr | sed -ne 's|^.* inet \([^/]*\)/.* scope global.*$|\1|p' | awk '{print $1}' | head -1)
 	CPU=$(cat /proc/cpuinfo | grep "model\|Model" | tail -n 1 | awk -F: '{print $2}' | cut -d " " -f2-4)
 	CPU_CORE=$(lscpu | grep "CPU(s)" | head -n 1 | awk '{print $2}')
 	CPU_MHZ=$(lscpu | grep "MHz" | head -n 1 | sed 's/ //g' | awk -F: '{print $2}' | cut -d. -f1)
@@ -358,7 +357,7 @@ function mainMenu() {
 	printf "\n %-25s %1s %-7s\e[0m" "RAM Usage" ":" "${RAM_USED}MB / ${TOTAL_RAM}MB (${RAM_USAGE}%)"
 	printf "\n %-25s %1s %-7s\e[0m" "Date" ":" "${DATE}"
     	printf "\n %-25s %1s %-7s\e[0m" "Uptime" ":" "${UPTIME}"
- 	printf "\n %-25s %1s %-7s\e[0m" "IP Address" ":" "${SERVER_IP}"
+ 	printf "\n %-25s %1s %-7s\e[0m" "IP Address" ":" "${publicIP}"
 	printf "\n %-25s %1s %-7s\e[0m" "Daily Data Usage" ":" "${DAILY_USAGE}"
 	printf "\n %-25s %1s %-7s\e[0m" "Monthly Data Usage" ":" "${MONTHLY_USAGE}"
 	echo
