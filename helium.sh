@@ -9,7 +9,6 @@ WHITE="\e[1m"
 NOCOLOR="\e[0m"
 
 providers="/etc/dnsmasq/providers.txt"
-tmpProviders="etc/dnsmasq/providers.tmp"
 dnsmasqHostFinalList="/etc/dnsmasq/adblock.hosts"
 tempHostsList="/etc/dnsmasq/list.tmp"
 publicIP=$(wget -qO- ipv4.icanhazip.com)
@@ -33,7 +32,7 @@ function checkVirt() {
 		exit 1
 	fi
 	if [ "$(systemd-detect-virt)" == "lxc" ]; then
-		echo " LXC is not supported (yet)."
+		echo " LXC is not supported (yet)"
 		exit 1
 	fi
 }
