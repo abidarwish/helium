@@ -2,7 +2,7 @@
 #script by Abi Darwish
 
 VERSIONNAME="Helium v"
-VERSIONNUMBER="1.4"
+VERSIONNUMBER="1.5"
 GREEN="\e[1;32m"
 RED="\e[1;31m"
 WHITE="\e[1m"
