@@ -9,6 +9,7 @@ WHITE="\e[1m"
 NOCOLOR="\e[0m"
 
 providers="/etc/dnsmasq/providers.txt"
+tmpProviders="etc/dnsmasq/providers.tmp"
 dnsmasqHostFinalList="/etc/dnsmasq/adblock.hosts"
 tempHostsList="/etc/dnsmasq/list.tmp"
 publicIP=$(wget -qO- ipv4.icanhazip.com)
@@ -197,11 +198,10 @@ function updateEngine() {
         	list_url=$(echo $line | grep -E -v "^#" | cut -d '"' -f2)
         	curl "${list_url}" 2> /dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" >> ${tempHostsList}
     	done < ${providers}
-    
-    	grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >> ${tempHostsList}
-
+    	if [[ ! -z $(ip a | grep -w "inet6") ]]; then
+    		grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >> ${tempHostsList}
+	fi
     	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq > ${dnsmasqHostFinalList}
-
     	systemctl restart dnsmasq
     	echo -e ${GREEN}"done"${NOCOLOR}
     	sleep 1
@@ -213,16 +213,24 @@ function listUpdate() {
     	clear
     	header
     	echo
-    	updateEngine
-    	echo
-    	read -p " Press Enter to continue..."
-    	mainMenu
+    	read -p " Do you want to update blocked hostnames? [y/n]: " UPDATE
+    	if [[ $UPDATE == "y" ]]; then
+    	       updateEngine
+    	       echo
+    	       read -p " Press Enter to continue..."
+    	       mainMenu
+    	 else
+    	       mainMenu
+    	 fi
 }
 
 function activateProvider() {
 	clear
 	header
 	echo
+	if [[ ! -e /etc/dnsmasq/providers.tmp ]]; then
+	       cp /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp
+	fi
 	printf " ${WHITE}%-26s %10s${NOCOLOR}\n" "LIST PROVIDER" "STATUS"
 	echo " --------------------------------------"
 	while IFS= read -r line; do
@@ -233,32 +241,39 @@ function activateProvider() {
 		else
 			printf " %-25s \e[1;31m%12s\e[0m\n" "${INACTIVE_PROVIDER}" "inactive"
 		fi
-	done < /etc/dnsmasq/providers.txt
+	done < /etc/dnsmasq/providers.tmp
 	echo
-	read -p " Select a provider to be activated
+	if [[ ! -z $(diff -q /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt) ]]; then
+		read -p " Select a provider to be activated
+ (press s to apply changes or c to cancel): " SELECT
+	else
+		read -p " Select a provider to be activated
  (press c to cancel): " SELECT
-    	if [[ $SELECT == c ]]; then
-		if [[ ! -z $(diff -q /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp) ]]; then
-			rm -rf /etc/dnsmasq/providers.tmp
+	fi
+    if [[ $SELECT == s ]]; then
+		#if [[ ! -z $(diff -q /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp) ]]; then
+			mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
 			echo " Applying changes..."
 			updateEngine
 			echo
 			read -p " Press Enter to continue..."
 			mainMenu
-		else
-			mainMenu
-		fi
-    	fi
-    	if [[ -z $SELECT ]]; then
-        	activateProvider
-    	fi
-	if [[ $(grep -E -c -w "^#${SELECT}" /etc/dnsmasq/providers.txt) != 0 ]]; then
-		cp /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp
-		sed -E -i "s/^\#${SELECT}/${SELECT}/" /etc/dnsmasq/providers.txt
-		echo -e -n " Activating $SELECT..."
-		sleep 2
-		echo -e ${GREEN}"done"${NOCOLOR}
-		sleep 2
+    fi
+    if [[ $SELECT == c ]]; then
+           #sed -E -i "s/^${SELECT}/\#${SELECT}/" /etc/dnsmasq/providers.txt
+           rm -rf /etc/dnsmasq/providers.tmp
+	    mainMenu
+    fi
+    if [[ -z $SELECT ]]; then
+        activateProvider
+    fi
+	if [[ $(grep -E -c -w "^#${SELECT}" /etc/dnsmasq/providers.tmp) != 0 ]]; then
+		#cp /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp
+		sed -E -i "s/^\#${SELECT}/${SELECT}/" /etc/dnsmasq/providers.tmp
+		# echo -e -n " Activating $SELECT..."
+		# sleep 2
+		# echo -e ${GREEN}"done"${NOCOLOR}
+		# sleep 2
 		activateProvider
 	else
 		echo -e " ${SELECT} is already active"
@@ -272,6 +287,9 @@ function deactivateProvider() {
 	clear
 	header
 	echo
+	if [[ ! -e /etc/dnsmasq/providers.tmp ]]; then
+	       cp /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp
+	fi
 	printf " ${WHITE}%-26s %10s${NOCOLOR}\n" "LIST PROVIDER" "STATUS"
 	echo " --------------------------------------"
 	while IFS= read -r line; do
@@ -282,28 +300,35 @@ function deactivateProvider() {
 		else
 			printf " %-25s \e[1;31m%12s\e[0m\n" "${INACTIVE_PROVIDER}" "inactive"
 		fi
-	done < /etc/dnsmasq/providers.txt
+	done < /etc/dnsmasq/providers.tmp
 	echo
+	if [[ ! -z $(diff -q /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt) ]]; then
+	read -p " Select a provider to be activated
+ (press s to apply changes or c to cancel): " SELECT
+       else
 	read -p " Select a provider to be deactivated
  (press c to cancel): " SELECT
-    	if [[ $SELECT == c ]]; then
-		if [[ ! -z $(diff -q /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp) ]]; then
-			rm -rf /etc/dnsmasq/providers.tmp
+       fi
+    	if [[ $SELECT == s ]]; then
+		#if [[ ! -z $(diff -q /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp) ]]; then
+			mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
 			echo " Applying changes..."
 			updateEngine
 			echo
 			read -p " Press Enter to continue..."
 			mainMenu
-		else
-			mainMenu
-		fi
+	fi
+	if [[ $SELECT == c ]]; then
+	       #sed -E -i "s/^\#${SELECT}/${SELECT}/" /etc/dnsmasq/providers.txt
+	       rm -rf /etc/dnsmasq/providers.tmp
+		mainMenu
     	fi
     	if [[ -z $SELECT ]]; then
         	deactivateProvider
     	fi
-	if [[ $(grep -E -c -w "^#${SELECT}" /etc/dnsmasq/providers.txt) == 0 ]]; then
-		cp /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp
-		sed -E -i "s/^${SELECT}/\#${SELECT}/" /etc/dnsmasq/providers.txt
+	if [[ $(grep -E -c -w "^#${SELECT}" /etc/dnsmasq/providers.tmp) == 0 ]]; then
+		#cp /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp
+		sed -E -i "s/^${SELECT}/\#${SELECT}/" /etc/dnsmasq/providers.tmp
 		#echo -e -n " Deactivating $SELECT..."
 		#sleep 2
 		#echo -e ${GREEN}"done"${NOCOLOR}
@@ -324,7 +349,7 @@ function mainMenu() {
 	echo -e " \e[1mSystem Status\e[0m"
 	if [[ $(systemctl is-active dnsmasq) == active ]]; then
         	printf " %-25s %1s \e[1;32m%7s\e[0m" "Dnsmasq" ":" "running"
-		printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Active since" ":" "$(systemctl status dnsmasq.service | grep -w "Active" | awk '{print $9,$10}')"
+		printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Active since" ":" "$(systemctl status dnsmasq.service | grep -w "Active" | awk '{print $9,$10,$11,$12}')"
     	else
         	printf " %-25s %1s \e[1;31m%7s\e[0m" "Dnsmasq" ":" "stopped"
     	fi
