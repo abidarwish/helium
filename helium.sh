@@ -81,9 +81,6 @@ function install() {
         > /etc/resolvconf/resolv.conf.d/original
 	echo "nameserver 127.0.0.1" > /etc/resolv.conf
         echo "nameserver 127.0.0.1" > /etc/resolvconf/resolv.conf.d/head
-	#sed -i -E "/^exit 0/d" /etc/rc.local
-    	#echo -e 'echo "nameserver 127.0.0.1" > /etc/resolv.conf
-#exit 0' >> /etc/rc.local
 	sleep 1
     	echo -e " Installation completed"
 	sleep 1
@@ -250,30 +247,23 @@ function activateProvider() {
 		read -p " Select a provider to be activated
  (press c to cancel): " SELECT
 	fi
-    if [[ $SELECT == s ]]; then
-		#if [[ ! -z $(diff -q /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp) ]]; then
-			mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
-			echo " Applying changes..."
-			updateEngine
-			echo
-			read -p " Press Enter to continue..."
-			mainMenu
-    fi
-    if [[ $SELECT == c ]]; then
-           #sed -E -i "s/^${SELECT}/\#${SELECT}/" /etc/dnsmasq/providers.txt
-           rm -rf /etc/dnsmasq/providers.tmp
-	    mainMenu
-    fi
-    if [[ -z $SELECT ]]; then
-        activateProvider
-    fi
+    	if [[ $SELECT == s ]]; then
+		mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
+		echo " Applying changes..."
+		updateEngine
+		echo
+		read -p " Press Enter to continue..."
+		mainMenu
+    	fi
+    	if [[ $SELECT == c ]]; then
+		rm -rf /etc/dnsmasq/providers.tmp
+		mainMenu
+	fi
+	if [[ -z $SELECT ]]; then
+		activateProvider
+	fi
 	if [[ $(grep -E -c -w "^#${SELECT}" /etc/dnsmasq/providers.tmp) != 0 ]]; then
-		#cp /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp
 		sed -E -i "s/^\#${SELECT}/${SELECT}/" /etc/dnsmasq/providers.tmp
-		# echo -e -n " Activating $SELECT..."
-		# sleep 2
-		# echo -e ${GREEN}"done"${NOCOLOR}
-		# sleep 2
 		activateProvider
 	else
 		echo -e " ${SELECT} is already active"
@@ -303,36 +293,29 @@ function deactivateProvider() {
 	done < /etc/dnsmasq/providers.tmp
 	echo
 	if [[ ! -z $(diff -q /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt) ]]; then
-	read -p " Select a provider to be activated
+		read -p " Select a provider to be activated
  (press s to apply changes or c to cancel): " SELECT
        else
-	read -p " Select a provider to be deactivated
+       		read -p " Select a provider to be deactivated
  (press c to cancel): " SELECT
        fi
-    	if [[ $SELECT == s ]]; then
-		#if [[ ! -z $(diff -q /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp) ]]; then
-			mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
-			echo " Applying changes..."
-			updateEngine
-			echo
-			read -p " Press Enter to continue..."
-			mainMenu
+       if [[ $SELECT == s ]]; then
+       		mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
+		echo " Applying changes..."
+		updateEngine
+		echo
+		read -p " Press Enter to continue..."
+		mainMenu
 	fi
 	if [[ $SELECT == c ]]; then
-	       #sed -E -i "s/^\#${SELECT}/${SELECT}/" /etc/dnsmasq/providers.txt
-	       rm -rf /etc/dnsmasq/providers.tmp
+		rm -rf /etc/dnsmasq/providers.tmp
 		mainMenu
     	fi
     	if [[ -z $SELECT ]]; then
         	deactivateProvider
     	fi
 	if [[ $(grep -E -c -w "^#${SELECT}" /etc/dnsmasq/providers.tmp) == 0 ]]; then
-		#cp /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp
 		sed -E -i "s/^${SELECT}/\#${SELECT}/" /etc/dnsmasq/providers.tmp
-		#echo -e -n " Deactivating $SELECT..."
-		#sleep 2
-		#echo -e ${GREEN}"done"${NOCOLOR}
-		#sleep 2
 		deactivateProvider
 	else
 		echo -e " ${SELECT} is already inactive"
