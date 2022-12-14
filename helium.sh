@@ -196,15 +196,15 @@ function updateEngine() {
     	done < ${providers}
     	if [[ ! -z $(ip a | grep -w "inet6") ]]; then
     		grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >> ${tempHostsList}
-		fi
+	fi
     	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq > ${dnsmasqHostFinalList}
-		if [[ ! -e /etc/dnsmasq/whitelist.hosts ]]; then
-			touch /etc/dnsmasq/whitelist.hosts
-		fi
-		DATA=$(cat /etc/dnsmasq/whitelist.hosts)
-		for HOSTNAME in ${DATA}; do
-			sed -E -i "/${HOSTNAME}/d" /etc/dnsmasq/adblock.hosts
-		done
+	if [[ ! -e /etc/dnsmasq/whitelist.hosts ]]; then
+		touch /etc/dnsmasq/whitelist.hosts
+	fi
+	DATA=$(cat /etc/dnsmasq/whitelist.hosts)
+	for HOSTNAME in ${DATA}; do
+		sed -E -i "/${HOSTNAME}/d" /etc/dnsmasq/adblock.hosts
+	done
     	systemctl restart dnsmasq
     	echo -e ${GREEN}"done"${NOCOLOR}
     	sleep 1
@@ -354,12 +354,12 @@ function whitelistHost() {
 	if [[ ! -z $(diff -q /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts) ]]; then
 		read -p " Select a url from above to delete or type a new one to whitelist
  (press s to apply changes or c to cancel): " SELECT
-    else
-       	read -p " Select a url from above to delete or type a new one to whitelist
+    	else
+       		read -p " Select a url from above to delete or type a new one to whitelist
  (press c to cancel): " SELECT
-    fi
+    	fi
 	if [[ $SELECT == s ]]; then
-       	mv /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts
+       		mv /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts
 		updateEngine
 		echo
 		read -p " Press Enter to continue..."
@@ -368,10 +368,10 @@ function whitelistHost() {
 	if [[ $SELECT == c ]]; then
 		rm -rf /etc/dnsmasq/whitelist.hosts.tmp
 		mainMenu
-    fi
-    if [[ -z $SELECT ]]; then
-        whitelistHost
-    fi
+    	fi
+    	if [[ -z $SELECT ]]; then
+        	whitelistHost
+    	fi
 	if [[ $(grep -c -w "${SELECT}" /etc/dnsmasq/whitelist.hosts.tmp) == 0 ]]; then
 		echo "${SELECT}" >> /etc/dnsmasq/whitelist.hosts.tmp
 		sed -i '/^$/d' /etc/dnsmasq/whitelist.hosts.tmp | sort | uniq
@@ -416,9 +416,9 @@ function mainMenu() {
 	DAILY_USAGE=$(vnstat -d --oneline | awk -F\; '{print $6}' | sed 's/ //')
 	MONTHLY_USAGE=$(vnstat -m --oneline | awk -F\; '{print $11}' | sed 's/ //')
 	if [[ ${CPU_CORE} == 1 ]]; then
-	    printf " %-25s %1s %-7s\e[0m" "CPU (single core)" ":" "${CPU} @ ${CPU_MHZ}Mhz"
+		printf " %-25s %1s %-7s\e[0m" "CPU (single core)" ":" "${CPU} @ ${CPU_MHZ}Mhz"
 	else
-	    printf " %-25s %1s %-7s\e[0m" "CPU (${CPU_CORE} cores)" ":" "${CPU} @ ${CPU_MHZ}Mhz"
+		printf " %-25s %1s %-7s\e[0m" "CPU (${CPU_CORE} cores)" ":" "${CPU} @ ${CPU_MHZ}Mhz"
 	fi
 	printf "\n %-25s %1s %-7s\e[0m" "OS Version" ":" "${OS}"
 	printf "\n %-25s %1s %-7s\e[0m" "Kernel Version" ":" "${KERNEL}"
