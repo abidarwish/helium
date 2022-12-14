@@ -70,7 +70,6 @@ function install() {
     	fi
     	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
     	mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
-	rm -rf /etc/dnsmasq.conf
     	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
 	rm -rf ${providers}
@@ -79,7 +78,7 @@ function install() {
 	updateEngine
         > /etc/resolvconf/resolv.conf.d/original
 	echo "nameserver 127.0.0.1" > /etc/resolv.conf
-        echo "nameserver 127.0.0.1" > /etc/resolvconf/resolv.conf.d/head
+        #echo "nameserver 127.0.0.1" > /etc/resolvconf/resolv.conf.d/head
 	sleep 1
     	echo -e " Installation completed"
 	sleep 1
@@ -118,6 +117,7 @@ function stop() {
 		if [[ $STOP == "y" ]]; then
 			systemctl stop dnsmasq
 			echo "nameserver 1.1.1.1" > /etc/resolv.conf
+			#> /etc/resolvconf/resolv.conf.d/head
 			echo -e -n " Stopping Helium..."
 			sleep 2
 			echo -e $GREEN"done"$NOCOLOR
