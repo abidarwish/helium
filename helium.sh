@@ -2,7 +2,7 @@
 #script by Abi Darwish
 
 VERSIONNAME="Helium v"
-VERSIONNUMBER="1.5"
+VERSIONNUMBER="1.6"
 GREEN="\e[1;32m"
 RED="\e[1;31m"
 WHITE="\e[1m"
@@ -70,6 +70,7 @@ function install() {
     	fi
     	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
     	mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
+	rm -rf /etc/dnsmasq.conf
     	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
 	rm -rf ${providers}
@@ -78,7 +79,7 @@ function install() {
 	updateEngine
         > /etc/resolvconf/resolv.conf.d/original
 	echo "nameserver 127.0.0.1" > /etc/resolv.conf
-        #echo "nameserver 127.0.0.1" > /etc/resolvconf/resolv.conf.d/head
+        echo "nameserver 127.0.0.1" > /etc/resolvconf/resolv.conf.d/head
 	sleep 1
     	echo -e " Installation completed"
 	sleep 1
@@ -117,7 +118,6 @@ function stop() {
 		if [[ $STOP == "y" ]]; then
 			systemctl stop dnsmasq
 			echo "nameserver 1.1.1.1" > /etc/resolv.conf
-			#> /etc/resolvconf/resolv.conf.d/head
 			echo -e -n " Stopping Helium..."
 			sleep 2
 			echo -e $GREEN"done"$NOCOLOR
@@ -196,8 +196,15 @@ function updateEngine() {
     	done < ${providers}
     	if [[ ! -z $(ip a | grep -w "inet6") ]]; then
     		grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >> ${tempHostsList}
-	fi
+		fi
     	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq > ${dnsmasqHostFinalList}
+		if [[ ! -e /etc/dnsmasq/whitelist.hosts ]]; then
+			touch /etc/dnsmasq/whitelist.hosts
+		fi
+		DATA=$(cat /etc/dnsmasq/whitelist.hosts)
+		for HOSTNAME in ${DATA}; do
+			sed -E -i "/${HOSTNAME}/d" /etc/dnsmasq/adblock.hosts
+		done
     	systemctl restart dnsmasq
     	echo -e ${GREEN}"done"${NOCOLOR}
     	sleep 1
@@ -324,6 +331,62 @@ function deactivateProvider() {
 	deactivateProvider
 }
 
+function whitelistHost() {
+	clear
+	header
+	echo
+	if [[ ! -e /etc/dnsmasq/whitelist.hosts ]]; then
+		touch /etc/dnsmasq/whitelist.hosts
+	fi
+	if [[ ! -e /etc/dnsmasq/whitelist.hosts.tmp ]]; then
+	       cp /etc/dnsmasq/whitelist.hosts /etc/dnsmasq/whitelist.hosts.tmp
+	fi
+	printf " ${WHITE}%-26s %10s${NOCOLOR}\n" "HOST" "STATUS"
+	echo " --------------------------------------"
+	if [[ -z $(cat /etc/dnsmasq/whitelist.hosts.tmp) ]]; then
+		echo -e " List is empty"
+	fi
+	while IFS= read -r line; do
+		ACTIVE_HOST=$(echo $line)
+		printf " %-25s \e[1;32m%12s\e[0m\n" "${ACTIVE_HOST}" "whitelisted"
+	done < /etc/dnsmasq/whitelist.hosts.tmp
+	echo
+	if [[ ! -z $(diff -q /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts) ]]; then
+		read -p " Select a url from above to delete or type a new one to whitelist
+ (press s to apply changes or c to cancel): " SELECT
+    else
+       	read -p " Select a url from above to delete or type a new one to whitelist
+ (press c to cancel): " SELECT
+    fi
+	if [[ $SELECT == s ]]; then
+       	mv /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts
+		updateEngine
+		echo
+		read -p " Press Enter to continue..."
+		mainMenu
+	fi
+	if [[ $SELECT == c ]]; then
+		rm -rf /etc/dnsmasq/whitelist.hosts.tmp
+		mainMenu
+    fi
+    if [[ -z $SELECT ]]; then
+        whitelistHost
+    fi
+	if [[ $(grep -c -w "${SELECT}" /etc/dnsmasq/whitelist.hosts.tmp) == 0 ]]; then
+		echo "${SELECT}" >> /etc/dnsmasq/whitelist.hosts.tmp
+		sed -i '/^$/d' /etc/dnsmasq/whitelist.hosts.tmp | sort | uniq
+		whitelistHost
+	else
+		read -p " Do you want to delete this url? [y/n]: " DELETE
+		if [[ ${DELETE} == y ]]; then
+			sed -E -i "/^${SELECT}/d" /etc/dnsmasq/whitelist.hosts.tmp
+			whitelistHost
+		else
+			whitelistHost
+		fi
+	fi
+}
+
 function mainMenu() {
 	clear
 	header
@@ -368,12 +431,13 @@ function mainMenu() {
 	echo
 	echo
 	echo -e $WHITE" Manage Helium"$NOCOLOR
- 	echo -e " [1] Start Dnsmasq\t   [5] Activate Provider 
- [2] Stop Dnsmasq\t   [6] Deactivate provider
- [3] Update hostnames\t   [7] Uninstall Helium
- [4] Bypass Netflix\t   [8] Exit"
+ 	echo -e " [1] Start Dnsmasq\t   [6] Deactivate provider
+ [2] Stop Dnsmasq\t   [7] Whitelist host
+ [3] Update hostnames\t   [8] Uninstall Helium
+ [4] Bypass Netflix\t   [9] Exit
+ [5] Activate Provider"
 	echo
-	read -p $' Enter option [1-8]: ' MENU_OPTION
+	read -p $' Enter option [1-9]: ' MENU_OPTION
 	case ${MENU_OPTION} in
 	1)
 		start
@@ -394,9 +458,12 @@ function mainMenu() {
         	deactivateProvider
         	;;
 	7)
-		uninstall
+		whitelistHost
 		;;
 	8)
+		uninstall
+		;;
+	9)
 		exit 0
 		;;
 	*)
