@@ -8,7 +8,7 @@ Helium is a dnsmasq installer autoscript. Helium will setup dnsmasq to block ads
   <img src="5C0C4775-1FF4-4373-94B0-DCA1EF151752.png">
 </p>
 
-It helps you manage dnsmasq configuration by simply following the on-screen instructions as easy as 1, 2, 3, y or n.
+It helps you manage dnsmasq configuration by simply following the on-screen instructions as easy as 1, 2, 3.
 
 <p align="center">
   <img src="91B9BC35-5AD1-4274-81B7-021FDBFCF7F2.png">
