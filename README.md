@@ -14,7 +14,7 @@ It helps you manage dnsmasq configuration by simply following the on-screen inst
   <img src="EBFEB836-28CE-4F63-84F4-7F78B2C706BF.png">
 </p>
 
-requirement : Debian/Ubuntu VPS
+requirement : Debian/Ubuntu OS
 
 To install, copy paste this command:
 
