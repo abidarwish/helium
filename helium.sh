@@ -69,6 +69,7 @@ function install() {
                 echo "nameserver 1.1.1.1" > /etc/resolv.conf
     	fi
     	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
+        systemctl enable dnsmasq
     	mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
 	rm -rf /etc/dnsmasq.conf
     	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
@@ -98,6 +99,7 @@ function start() {
 		read -p $' Press Enter to continue...'
 		mainMenu
 	fi
+        systemctl enable dnsmasq
 	systemctl restart dnsmasq
 	sleep 2
 	echo -e -n " Starting Helium..."
@@ -116,6 +118,7 @@ function stop() {
 		echo
 		read -p " Are you sure to stop Helium? [y/n]: " STOP
 		if [[ $STOP == "y" ]]; then
+                        systemctl disable dnsmasq
 			systemctl stop dnsmasq
 			echo "nameserver 1.1.1.1" > /etc/resolv.conf
 			echo -e -n " Stopping Helium..."
