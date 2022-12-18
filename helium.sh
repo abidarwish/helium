@@ -243,7 +243,7 @@ function activateProvider() {
 	echo
 	if [[ ! -z $(diff -q /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt) ]]; then
 		read -p " Select a provider to be activated
- (press s to apply changes or c to cancel): " SELECT
+ (press s to save changes or c to cancel): " SELECT
 	else
 		read -p " Select a provider to be activated
  (press c to cancel): " SELECT
@@ -295,7 +295,7 @@ function deactivateProvider() {
 	echo
 	if [[ ! -z $(diff -q /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt) ]]; then
 		read -p " Select a provider to be activated
- (press s to apply changes or c to cancel): " SELECT
+ (press s to save changes or c to cancel): " SELECT
        else
        		read -p " Select a provider to be deactivated
  (press c to cancel): " SELECT
@@ -348,7 +348,7 @@ function whitelistHost() {
 	echo
 	if [[ ! -z $(diff -q /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts) ]]; then
 		read -p " Select a url from above to delete or type a new one to whitelist
- (press s to apply changes or c to cancel): " SELECT
+ (press s to save changes or c to cancel): " SELECT
     else
        	read -p " Select a url from above to delete or type a new one to whitelist
  (press c to cancel): " SELECT
