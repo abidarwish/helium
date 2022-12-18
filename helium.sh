@@ -57,16 +57,16 @@ function initialCheck() {
 function install() {
 	echo -e " Installing Helium..."
     	if [[ ! -e /etc/dnsmasq ]]; then
-    		mkdir -p /etc/dnsmasq
+		mkdir -p /etc/dnsmasq
 	fi
     	if [[ ! -e /etc/resolv.conf.bak ]]; then
-       		cp /etc/resolv.conf /etc/resolv.conf.bak
+		cp /etc/resolv.conf /etc/resolv.conf.bak
     	fi
     	if [[ $(lsof -i :53 | grep -w -c "systemd-r") -ge "1" ]]; then
     		systemctl disable systemd-resolved
 		systemctl stop systemd-resolved
 		unlink /etc/resolv.conf
-                echo "nameserver 1.1.1.1" > /etc/resolv.conf
+		echo "nameserver 1.1.1.1" > /etc/resolv.conf
     	fi
     	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
     	mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
@@ -350,7 +350,7 @@ function whitelistHost() {
 		read -p " Select a url from above to delete or type a new one to whitelist
  (press s to save changes or c to cancel): " SELECT
         else
-       	read -p " Select a url from above to delete or type a new one to whitelist
+       		read -p " Select a url from above to delete or type a new one to whitelist
  (press c to cancel): " SELECT
         fi
 	if [[ $SELECT == s ]]; then
