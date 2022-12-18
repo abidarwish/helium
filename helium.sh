@@ -171,9 +171,7 @@ sleep 2
     	if [[ ! -e /etc/dnsmasq ]]; then
 		mkdir -p /etc/dnsmasq
 	fi
-    	if [[ ! -e /etc/resolv.conf.bak ]]; then
-		cp /etc/resolv.conf /etc/resolv.conf.bak
-    	fi
+    	echo "nameserver 8.8.8.8" > /etc/resolv.conf
     	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
 	rm -rf /etc/dnsmasq.conf
     	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
