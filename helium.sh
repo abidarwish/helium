@@ -2,7 +2,7 @@
 #script by Abi Darwish
 
 VERSIONNAME="Helium v"
-VERSIONNUMBER="2.0"
+VERSIONNUMBER="2.1"
 GREEN="\e[1;32m"
 RED="\e[1;31m"
 WHITE="\e[1m"
@@ -156,6 +156,40 @@ function changeDNS() {
     	echo
     	read -p " Press Enter to continue..."
     	mainMenu
+}
+
+function reinstall() {
+clear
+header
+echo
+read -p " Do you want to reinstall Helium? [y/n]: " REINSTALL
+if [[ ${REINSTALL} != y ]]; then
+mainMenu
+fi
+echo -e " Reinstalling Helium..."
+sleep 2
+    	if [[ ! -e /etc/dnsmasq ]]; then
+		mkdir -p /etc/dnsmasq
+	fi
+    	if [[ ! -e /etc/resolv.conf.bak ]]; then
+		cp /etc/resolv.conf /etc/resolv.conf.bak
+    	fi
+    	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
+	rm -rf /etc/dnsmasq.conf
+    	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
+    	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
+	rm -rf ${providers}
+    	wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
+	updateEngine
+        > /etc/resolvconf/resolv.conf.d/original
+	echo "nameserver 127.0.0.1" > /etc/resolv.conf
+        echo "nameserver 127.0.0.1" > /etc/resolvconf/resolv.conf.d/head
+	sleep 1
+    	echo -e " Installation completed"
+	sleep 1
+    	echo -e " Type \e[1;32mhelium\e[0m to start"
+    	echo
+	exit 0
 }
 
 function uninstall() {
@@ -511,11 +545,11 @@ function mainMenu() {
  	echo -e " [01] Start Dnsmasq\t   [07] Whitelist host
  [02] Stop Dnsmasq\t   [08] Bypass Netflix
  [03] Update database\t   [09] Update Helium
- [04] Cleanup database\t   [10] Uninstall Helium
- [05] Activate provider\t   [11] Exit
- [06] Deactivate provider"
+ [04] Cleanup database\t   [10] Reinstall Helium
+ [05] Activate provider\t   [11] Uninstall Helium
+ [06] Deactivate provider  [12] Exit"
 	echo
-	read -p $' Enter option [1-11]: ' MENU_OPTION
+	read -p $' Enter option [1-12]: ' MENU_OPTION
 	case ${MENU_OPTION} in
 	01|1)
 		start
@@ -545,10 +579,13 @@ function mainMenu() {
 	       updateHelium
 	       ;;
 	10)
-		uninstall
+		reinstall
 		;;
 	11)
-		exit 0
+		uninstall
+		;;
+	12)
+	       exit 0
 		;;
 	*)
 	mainMenu
