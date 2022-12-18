@@ -69,6 +69,7 @@ function install() {
 		echo "nameserver 1.1.1.1" > /etc/resolv.conf
     	fi
     	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
+	systemctl enable dnsmasq
     	mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
 	rm -rf /etc/dnsmasq.conf
     	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
@@ -98,6 +99,7 @@ function start() {
 		read -p $' Press Enter to continue...'
 		mainMenu
 	fi
+	systemctl enable dnsmasq
 	systemctl restart dnsmasq
 	sleep 2
 	echo -e -n " Starting Helium..."
@@ -116,6 +118,7 @@ function stop() {
 		echo
 		read -p " Do you want to stop Helium? [y/n]: " STOP
 		if [[ $STOP == "y" ]]; then
+			systemctl disable dnsmasq
 			systemctl stop dnsmasq
 			echo "nameserver 1.1.1.1" > /etc/resolv.conf
 			echo -e -n " Stopping Helium..."
@@ -159,20 +162,21 @@ function changeDNS() {
 }
 
 function reinstall() {
-clear
-header
-echo
-read -p " Do you want to reinstall Helium? [y/n]: " REINSTALL
-if [[ ${REINSTALL} != y ]]; then
-mainMenu
-fi
-echo -e " Reinstalling Helium..."
-sleep 2
+	clear
+	header
+	echo
+	read -p " Do you want to reinstall Helium? [y/n]: " REINSTALL
+	if [[ ${REINSTALL} != y ]]; then
+		mainMenu
+	fi
+	echo -e " Reinstalling Helium..."
+	sleep 2
     	if [[ ! -e /etc/dnsmasq ]]; then
 		mkdir -p /etc/dnsmasq
 	fi
-    	echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    	echo "nameserver 1.1.1.1" > /etc/resolv.conf
     	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
+	systemctl enable dnsmasq
 	rm -rf /etc/dnsmasq.conf
     	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
     	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
@@ -223,19 +227,19 @@ function updateEngine() {
     	done < ${providers}
     	if [[ ! -z $(ip a | grep -w "inet6") ]]; then
     		grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >> ${tempHostsList}
-		fi
+	fi
     	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq > ${dnsmasqHostFinalList}
-		if [[ ! -e /etc/dnsmasq/whitelist.hosts ]]; then
-			touch /etc/dnsmasq/whitelist.hosts
-		fi
-		DATA=$(cat /etc/dnsmasq/whitelist.hosts)
-		for HOSTNAME in ${DATA}; do
-			sed -E -i "/${HOSTNAME}/d" /etc/dnsmasq/adblock.hosts
-		done
+	if [[ ! -e /etc/dnsmasq/whitelist.hosts ]]; then
+		touch /etc/dnsmasq/whitelist.hosts
+	fi
+	DATA=$(cat /etc/dnsmasq/whitelist.hosts)
+	for HOSTNAME in ${DATA}; do
+		sed -E -i "/${HOSTNAME}/d" /etc/dnsmasq/adblock.hosts
+	done
     	systemctl restart dnsmasq
     	echo -e ${GREEN}"done"${NOCOLOR}
     	sleep 1
-    	echo -e -n $GREEN" $(cat ${dnsmasqHostFinalList} | wc -l) "$NOCOLOR
+    	echo -e -n $GREEN" $(cat ${dnsmasqHostFinalList} | sed '/^$/d' | wc -l) "$NOCOLOR
    	echo -e "hostnames have been blocked"
 }
 
