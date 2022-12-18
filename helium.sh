@@ -349,12 +349,12 @@ function whitelistHost() {
 	if [[ ! -z $(diff -q /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts) ]]; then
 		read -p " Select a url from above to delete or type a new one to whitelist
  (press s to save changes or c to cancel): " SELECT
-    else
+        else
        	read -p " Select a url from above to delete or type a new one to whitelist
  (press c to cancel): " SELECT
-    fi
+        fi
 	if [[ $SELECT == s ]]; then
-       	mv /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts
+       	        mv /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts
 		updateEngine
 		echo
 		read -p " Press Enter to continue..."
@@ -363,10 +363,10 @@ function whitelistHost() {
 	if [[ $SELECT == c ]]; then
 		rm -rf /etc/dnsmasq/whitelist.hosts.tmp
 		mainMenu
-    fi
-    if [[ -z $SELECT ]]; then
-        whitelistHost
-    fi
+        fi
+        if [[ -z $SELECT ]]; then
+                whitelistHost
+        fi
 	if [[ $(grep -c -w "${SELECT}" /etc/dnsmasq/whitelist.hosts.tmp) == 0 ]]; then
 		echo "${SELECT}" >> /etc/dnsmasq/whitelist.hosts.tmp
 		sed -i '/^$/d' /etc/dnsmasq/whitelist.hosts.tmp | sort | uniq
@@ -383,13 +383,13 @@ function whitelistHost() {
 }
 
 function cleaner() {
-       clear
-       header
-       echo
-       read -p " Do you want to cleanup the database? [y/n]: " CLEANUP
-       if [[ ${CLEANUP} != y ]]; then
+        clear
+        header
+        echo
+        read -p " Do you want to cleanup the database? [y/n]: " CLEANUP
+        if [[ ${CLEANUP} != y ]]; then
                mainMenu
-       fi
+        fi
        ORIGINAL_DATABASE=$(cat /etc/dnsmasq/adblock.hosts | sed '/^$/d' | wc -l)
        echo -e -n " Checking database..."
        sleep 2
