@@ -20,7 +20,7 @@ function header() {
 }
 
 function isRoot() {
-	if [ "${EUID}" != 0 ]; then
+	if [ ${EUID} != 0 ]; then
 		echo " You need to run this script as root"
 		exit 1
 	fi
@@ -62,7 +62,7 @@ function install() {
     	if [[ ! -e /etc/resolv.conf.bak ]]; then
 		cp /etc/resolv.conf /etc/resolv.conf.bak
     	fi
-    	if [[ $(lsof -i :53 | grep -w -c "systemd-r") -ge "1" ]]; then
+    	if [[ $(lsof -i :53 | grep -w -c "systemd-r") -ge 1 ]]; then
     		systemctl disable systemd-resolved
 		systemctl stop systemd-resolved
 		unlink /etc/resolv.conf
@@ -166,7 +166,7 @@ function reinstall() {
 	header
 	echo
 	read -p " Do you want to reinstall Helium? [y/n]: " REINSTALL
-	if [[ ${REINSTALL} != y ]]; then
+	if [[ ${REINSTALL} != "y" ]]; then
 		mainMenu
 	fi
 	echo -e " Reinstalling Helium..."
@@ -284,7 +284,7 @@ function activateProvider() {
 		read -p " Select a provider to be activated
  (press c to cancel): " SELECT
 	fi
-    	if [[ $SELECT == s ]]; then
+    	if [[ ${SELECT} == "s" ]]; then
 		mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
 		echo " Applying changes..."
 		updateEngine
@@ -292,7 +292,7 @@ function activateProvider() {
 		read -p " Press Enter to continue..."
 		mainMenu
     	fi
-    	if [[ $SELECT == c ]]; then
+    	if [[ ${SELECT} == "c" ]]; then
 		rm -rf /etc/dnsmasq/providers.tmp
 		mainMenu
 	fi
@@ -336,7 +336,7 @@ function deactivateProvider() {
        		read -p " Select a provider to be deactivated
  (press c to cancel): " SELECT
        fi
-       if [[ $SELECT == s ]]; then
+       if [[ ${SELECT} == "s" ]]; then
        		mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
 		echo " Applying changes..."
 		updateEngine
@@ -344,7 +344,7 @@ function deactivateProvider() {
 		read -p " Press Enter to continue..."
 		mainMenu
 	fi
-	if [[ $SELECT == c ]]; then
+	if [[ ${SELECT} == "c" ]]; then
 		rm -rf /etc/dnsmasq/providers.tmp
 		mainMenu
     	fi
@@ -389,14 +389,14 @@ function whitelistHost() {
        		read -p " Select a url from above to delete or type a new one to whitelist
  (press c to cancel): " SELECT
         fi
-	if [[ $SELECT == s ]]; then
+	if [[ ${SELECT} == "s" ]]; then
        	        mv /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts
 		updateEngine
 		echo
 		read -p " Press Enter to continue..."
 		mainMenu
 	fi
-	if [[ $SELECT == c ]]; then
+	if [[ ${SELECT} == "c" ]]; then
 		rm -rf /etc/dnsmasq/whitelist.hosts.tmp
 		mainMenu
         fi
@@ -409,7 +409,7 @@ function whitelistHost() {
 		whitelistHost
 	else
 		read -p " Do you want to delete this url? [y/n]: " DELETE
-		if [[ ${DELETE} == y ]]; then
+		if [[ ${DELETE} == "y" ]]; then
 			sed -E -i "/^${SELECT}/d" /etc/dnsmasq/whitelist.hosts.tmp
 			whitelistHost
 		else
@@ -423,7 +423,7 @@ function cleaner() {
 	header
 	echo
 	read -p " Do you want to cleanup the database? [y/n]: " CLEANUP
-	if [[ ${CLEANUP} != y ]]; then
+	if [[ ${CLEANUP} != "y" ]]; then
 		mainMenu
 	fi
 	ORIGINAL_DATABASE=$(cat /etc/dnsmasq/adblock.hosts | sed '/^$/d' | wc -l)
@@ -473,13 +473,13 @@ function updateHelium() {
 	echo
 	echo
 	read -p " Do you want to update? [y/n]: " UPDATE
-	if [[ ${UPDATE} != y ]]; then
+	if [[ ${UPDATE} != "y" ]]; then
 		rm -rf /tmp/helium.tmp
 		mainMenu
 	fi
 	read -p " Do you want to overwrite the existing providers? [y/n]: " OVERWRITE
 	echo -n -e " Updating Helium..."
-	if [[ ${OVERWRITE} == y ]]; then
+	if [[ ${OVERWRITE} == "y" ]]; then
 		rm -rf /etc/dnsmasq/providers.txt
 		wget -q -O /etc/dnsmasq/providers.txt "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
 	fi
@@ -505,7 +505,7 @@ function mainMenu() {
 	header
 	echo
 	echo -e " \e[1mSystem Status\e[0m"
-	if [[ $(systemctl is-active dnsmasq) == active ]]; then
+	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
         	printf " %-25s %1s \e[1;32m%7s\e[0m" "Dnsmasq" ":" "running"
 		printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Active since" ":" "$(systemctl status dnsmasq.service | grep -w "Active" | awk '{print $9,$10,$11,$12}')"
     	else
