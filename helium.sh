@@ -38,7 +38,7 @@ function checkVirt() {
 }
 
 function checkOS() {
- 	if [[ $(grep -w "ID" /etc/os-release | awk -F'=' '{print $2}') -ne "debian" ]] || [[ $(grep -w "ID" /etc/os-release | awk -F'=' '{print $2}') -ne "ubuntu" ]]; then
+	if [[ $(grep -w "ID" /etc/os-release | awk -F'=' '{print $2}') -ne "debian" ]] || [[ $(grep -w "ID" /etc/os-release | awk -F'=' '{print $2}') -ne "ubuntu" ]]; then
 		clear
         	header
  		echo
@@ -56,12 +56,8 @@ function initialCheck() {
 
 function install() {
 	echo -e " Installing Helium..."
-    	if [[ ! -e /etc/dnsmasq ]]; then
-		mkdir -p /etc/dnsmasq
-	fi
-    	if [[ ! -e /etc/resolv.conf.bak ]]; then
-		cp /etc/resolv.conf /etc/resolv.conf.bak
-    	fi
+	[[ ! -e /etc/dnsmasq ]] && mkdir -p /etc/dnsmasq
+	[[ ! -e /etc/resolv.conf.bak ]] && cp /etc/resolv.conf /etc/resolv.conf.bak
     	if [[ $(lsof -i :53 | grep -w -c "systemd-r") -ge "1" ]]; then
     		systemctl disable systemd-resolved
 		systemctl stop systemd-resolved
