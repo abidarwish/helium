@@ -113,7 +113,7 @@ function stop() {
 		echo -e $GREEN" Helium is running"$NOCOLOR
 		echo
 		read -p " Do you want to stop Helium? [y/n]: " STOP
-		if [[ ${STOP,,} == "y" ]]; then
+		if [[ ${STOP} == "y" ]]; then
 			systemctl disable dnsmasq
 			systemctl stop dnsmasq
 			echo "nameserver 1.1.1.1" >/etc/resolv.conf
@@ -139,15 +139,15 @@ function changeDNS() {
 	header
 	echo
 	echo -e " Proxy server IP address to bypass Netflix"
-	read -p " (press c to cancel): " DNS
-	oldDNS=$(grep -E -w "^server" /etc/dnsmasq.conf | cut -d '=' -f2)
-	[[ ${DNS,,} == "c" ]] && mainMenu
-	[[ -z $DNS ]] && changeDNS
-	sed -i "s/server=${oldDNS}/server=${DNS}/" /etc/dnsmasq.conf
+	read -p " (press c to cancel): " NEW_DNS
+	OLD_DNS=$(grep -E -w "^server" /etc/dnsmasq.conf | cut -d '=' -f2)
+	[[ ${NEW_DNS} == "c" ]] && mainMenu
+	[[ -z ${NEW_DNS} ]] && changeDNS
+	sed -i "s/server=${OLD_DNS}/server=${NEW_DNS}/" /etc/dnsmasq.conf
 	systemctl restart dnsmasq
 	sleep 1
 	echo -e -n " DNS server has been changed to "
-	echo -e $GREEN"$DNS"$NOCOLOR
+	echo -e $GREEN"${NEW_DNS}"$NOCOLOR
 	echo
 	read -p " Press Enter to continue..."
 	mainMenu
@@ -158,7 +158,7 @@ function reinstall() {
 	header
 	echo
 	read -p " Do you want to reinstall Helium? [y/n]: " REINSTALL
-	[[ ${REINSTALL,,} != "y" ]] && mainMenu
+	[[ ${REINSTALL} != "y" ]] && mainMenu
 	echo -e " Reinstalling Helium..."
 	sleep 2
 	[[ ! -e /etc/dnsmasq ]] && mkdir -p /etc/dnsmasq
@@ -187,7 +187,7 @@ function uninstall() {
 	header
 	echo
 	read -p " Do you want to uninstall Helium? [y/n]: " UNINSTALL
-	if [[ ${UNINSTALL,,} == "y" ]]; then
+	if [[ ${UNINSTALL} == "y" ]]; then
 		systemctl stop dnsmasq
 		systemctl disable dnsmasq
 		apt remove -y dnsmasq >/dev/null 2>&1
@@ -213,13 +213,9 @@ function updateEngine() {
 		list_url=$(echo $line | grep -E -v "^#" | cut -d '"' -f2)
 		curl "${list_url}" 2>/dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" >>${tempHostsList}
 	done <${providers}
-	if [[ ! -z $(ip a | grep -w "inet6") ]]; then
-		grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >>${tempHostsList}
-	fi
-	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d; /^::1 0.0.0.0/d' | sort | uniq >${dnsmasqHostFinalList}
-	if [[ ! -e /etc/dnsmasq/whitelist.hosts ]]; then
-		touch /etc/dnsmasq/whitelist.hosts
-	fi
+	[[ ! -z $(ip a | grep -w "inet6") ]] && grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >>${tempHostsList}
+	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0|^::1 0.0.0.0/d' | sort | uniq >${dnsmasqHostFinalList}
+	[[ ! -e /etc/dnsmasq/whitelist.hosts ]] && touch /etc/dnsmasq/whitelist.hosts
 	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq >${dnsmasqHostFinalList}
 	[[ ! -e /etc/dnsmasq/whitelist.hosts ]] && touch /etc/dnsmasq/whitelist.hosts
 	DATA=$(cat /etc/dnsmasq/whitelist.hosts)
@@ -238,7 +234,7 @@ function listUpdate() {
 	header
 	echo
 	read -p " Do you want to update blocked hostnames? [y/n]: " UPDATE
-	if [[ ${UPDATE,,} == "y" ]]; then
+	if [[ ${UPDATE} == "y" ]]; then
 		updateEngine
 		echo
 		read -p " Press Enter to continue..."
@@ -272,7 +268,7 @@ function activateProvider() {
 		read -p " Select a provider to be activated
  (press c to cancel): " SELECT
 	fi
-	if [[ ${SELECT,,} == "s" ]]; then
+	if [[ ${SELECT} == "s" ]]; then
 		mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
 		echo " Applying changes..."
 		updateEngine
@@ -280,7 +276,7 @@ function activateProvider() {
 		read -p " Press Enter to continue..."
 		mainMenu
 	fi
-	if [[ ${SELECT,,} == "c" ]]; then
+	if [[ ${SELECT} == "c" ]]; then
 		rm -rf /etc/dnsmasq/providers.tmp
 		mainMenu
 	fi
@@ -320,7 +316,7 @@ function deactivateProvider() {
 		read -p " Select a provider to be deactivated
  (press c to cancel): " SELECT
 	fi
-	if [[ ${SELECT,,} == "s" ]]; then
+	if [[ ${SELECT} == "s" ]]; then
 		mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
 		echo " Applying changes..."
 		updateEngine
@@ -328,7 +324,7 @@ function deactivateProvider() {
 		read -p " Press Enter to continue..."
 		mainMenu
 	fi
-	if [[ ${SELECT,,} == "c" ]]; then
+	if [[ ${SELECT} == "c" ]]; then
 		rm -rf /etc/dnsmasq/providers.tmp
 		mainMenu
 	fi
@@ -365,25 +361,25 @@ function whitelistHost() {
 		read -p " Select a url from above to delete or type a new one to whitelist
  (press c to cancel): " SELECT
 	fi
-	if [[ ${SELECT,,} == "s" ]]; then
+	if [[ ${SELECT} == "s" ]]; then
 		mv /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts
 		updateEngine
 		echo
 		read -p " Press Enter to continue..."
 		mainMenu
 	fi
-	if [[ ${SELECT,,} == "c" ]]; then
+	if [[ ${SELECT} == "c" ]]; then
 		rm -rf /etc/dnsmasq/whitelist.hosts.tmp
 		mainMenu
 	fi
 	[[ -z $SELECT ]] && whitelistHost
 	if [[ $(grep -c -w "${SELECT}" /etc/dnsmasq/whitelist.hosts.tmp) == 0 ]]; then
 		echo "${SELECT}" >>/etc/dnsmasq/whitelist.hosts.tmp
-		sed -i '/^$/d' /etc/dnsmasq/whitelist.hosts.tmp | sort | uniq
+		sed -i '/^$/d' /etc/dnsmasq/whitelist.hosts.tmp
 		whitelistHost
 	else
 		read -p " Do you want to delete this url? [y/n]: " DELETE
-		if [[ ${DELETE,,} == "y" ]]; then
+		if [[ ${DELETE} == "y" ]]; then
 			sed -E -i "/^${SELECT}/d" /etc/dnsmasq/whitelist.hosts.tmp
 			whitelistHost
 		else
@@ -397,7 +393,7 @@ function cleaner() {
 	header
 	echo
 	read -p " Do you want to cleanup the database? [y/n]: " CLEANUP
-	[[ ${CLEANUP,,} != "y" ]] && mainMenu
+	[[ ${CLEANUP} != "y" ]] && mainMenu
 	ORIGINAL_DATABASE=$(cat /etc/dnsmasq/adblock.hosts | sed '/^$/d' | wc -l)
 	echo -e -n " Checking database..."
 	sleep 2
@@ -430,9 +426,7 @@ function updateHelium() {
 	INSTALLED_HELIUM=$(grep -w "VERSIONNUMBER=" /usr/local/sbin/helium | awk -F'"' '{print $2}' | head -n 1)
 	if [[ ${INSTALLED_HELIUM} == ${LATEST_HELIUM} ]]; then
 		echo -e -n "\n Your Helium v${VERSIONNUMBER} is the latest version"
-		sleep 1
 		echo -e -n "\n No need to update"
-		sleep 1
 		echo
 		echo
 		read -p " Press Enter to continue..."
@@ -443,13 +437,13 @@ function updateHelium() {
 	echo
 	echo
 	read -p " Do you want to update? [y/n]: " UPDATE
-	if [[ ${UPDATE,,} != "y" ]]; then
+	if [[ ${UPDATE} != "y" ]]; then
 		rm -rf /tmp/helium.tmp
 		mainMenu
 	fi
 	read -p " Do you want to overwrite the existing providers? [y/n]: " OVERWRITE
 	echo -n -e " Updating Helium..."
-	if [[ ${OVERWRITE,,} == "y" ]]; then
+	if [[ ${OVERWRITE} == "y" ]]; then
 		rm -rf /etc/dnsmasq/providers.txt
 		wget -q -O /etc/dnsmasq/providers.txt "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
 	fi
