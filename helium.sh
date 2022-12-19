@@ -484,7 +484,7 @@ function mainMenu() {
 	NAMESERVER=$(grep -w -E "^server" /etc/dnsmasq.conf | head -n 1 | awk -F'=' '{print $2}')
 	printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Nameserver" ":" "$NAMESERVER"
 	printf "\n %-25s %1s \e[1;32m%'d\n\e[0m" "Blocked hostnames" ":" "$(cat ${dnsmasqHostFinalList} | wc -l)"
-  echo
+	echo
 	echo -e " \e[1mMachine Info\e[0m"
 	CPU=$(cat /proc/cpuinfo | grep "model\|Model" | tail -n 1 | awk -F: '{print $2}' | cut -d " " -f2-4)
 	CPU_CORE=$(lscpu | grep "CPU(s)" | head -n 1 | awk '{print $2}')
