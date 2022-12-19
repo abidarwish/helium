@@ -220,6 +220,8 @@ function updateEngine() {
 	if [[ ! -e /etc/dnsmasq/whitelist.hosts ]]; then
 		touch /etc/dnsmasq/whitelist.hosts
 	fi
+	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq >${dnsmasqHostFinalList}
+	[[ ! -e /etc/dnsmasq/whitelist.hosts ]] && touch /etc/dnsmasq/whitelist.hosts
 	DATA=$(cat /etc/dnsmasq/whitelist.hosts)
 	for HOSTNAME in ${DATA}; do
 		sed -E -i "/${HOSTNAME}/d" /etc/dnsmasq/adblock.hosts
@@ -350,9 +352,7 @@ function whitelistHost() {
 	[[ ! -e /etc/dnsmasq/whitelist.hosts.tmp ]] && cp /etc/dnsmasq/whitelist.hosts /etc/dnsmasq/whitelist.hosts.tmp
 	printf " ${WHITE}%-26s %10s${NOCOLOR}\n" "HOST" "STATUS"
 	echo " --------------------------------------"
-	if [[ -z $(cat /etc/dnsmasq/whitelist.hosts.tmp) ]]; then
-		echo -e " List is empty"
-	fi
+	[[ -z $(cat /etc/dnsmasq/whitelist.hosts.tmp) ]] && echo -e " List is empty"
 	while IFS= read -r line; do
 		ACTIVE_HOST=$(echo $line)
 		printf " %-25s \e[1;32m%12s\e[0m\n" "${ACTIVE_HOST}" "whitelisted"
