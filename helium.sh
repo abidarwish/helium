@@ -216,8 +216,6 @@ function updateEngine() {
 	[[ ! -z $(ip a | grep -w "inet6") ]] && grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >>${tempHostsList}
 	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0|^::1 0.0.0.0/d' | sort | uniq >${dnsmasqHostFinalList}
 	[[ ! -e /etc/dnsmasq/whitelist.hosts ]] && touch /etc/dnsmasq/whitelist.hosts
-	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0/d' | sed -E '/^::1 0.0.0.0/d' | sort | uniq >${dnsmasqHostFinalList}
-	[[ ! -e /etc/dnsmasq/whitelist.hosts ]] && touch /etc/dnsmasq/whitelist.hosts
 	DATA=$(cat /etc/dnsmasq/whitelist.hosts)
 	for HOSTNAME in ${DATA}; do
 		sed -E -i "/${HOSTNAME}/d" /etc/dnsmasq/adblock.hosts
