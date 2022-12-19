@@ -232,14 +232,11 @@ function listUpdate() {
 	header
 	echo
 	read -p " Do you want to update blocked hostnames? [y/n]: " UPDATE
-	if [[ ${UPDATE} == "y" ]]; then
-		updateEngine
-		echo
-		read -p " Press Enter to continue..."
-		mainMenu
-	else
-		mainMenu
-	fi
+	[[ ${UPDATE} != "y" ]] && mainMenu
+	updateEngine
+	echo
+	read -p " Press Enter to continue..."
+	mainMenu
 }
 
 function activateProvider() {
@@ -392,7 +389,7 @@ function cleaner() {
 	echo
 	read -p " Do you want to cleanup the database? [y/n]: " CLEANUP
 	[[ ${CLEANUP} != "y" ]] && mainMenu
-	ORIGINAL_DATABASE=$(cat /etc/dnsmasq/adblock.hosts | sed '/^$/d' | wc -l)
+	OLD_DATABASE=$(cat /etc/dnsmasq/adblock.hosts | sed '/^$/d' | wc -l)
 	echo -e -n " Checking database..."
 	sleep 2
 	rm -rf /etc/dnsmasq/dead.hosts
@@ -404,7 +401,7 @@ function cleaner() {
 		echo -e -n ${RED}"deleted"${NOCOLOR}
 	done
 	NEW_DATABASE=$(cat /etc/dnsmasq/adblock.hosts | sed '/^$/d' | wc -l)
-	DELETED_HOSTNAMES=$((ORIGINAL_DATABASE - NEW_DATABASE))
+	DELETED_HOSTNAMES=$((OLD_DATABASE - NEW_DATABASE))
 	printf "\n \e[1;32m%'d\e[0m %-10s\n" "${DELETED_HOSTNAMES}" "dead hostnames have been deleted from the database"
 	[[ ${DELETED_HOSTNAMES} -gt 0 ]] && systemctl restart dnsmasq
 	echo
@@ -416,7 +413,7 @@ function updateHelium() {
 	clear
 	header
 	echo
-	echo -e -n " Check for update..."
+	echo -e -n " Checking for update..."
 	sleep 1
 	rm -rf /tmp/helium.tmp
 	wget -q -O /tmp/helium.tmp "https://raw.githubusercontent.com/abidarwish/helium/main/helium.sh"
