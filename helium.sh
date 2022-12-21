@@ -259,28 +259,32 @@ function activateProvider() {
 	if [[ ! -z $(diff -q /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt) ]]; then
 		read -p " Select a provider to be activated
  (press s to save changes or c to cancel): " SELECT
+		if [[ ${SELECT,,} == "s" ]]; then
+			mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
+			echo " Applying changes..."
+			updateEngine
+			echo
+			read -p " Press Enter to continue..."
+			mainMenu
+		fi
 	else
 		read -p " Select a provider to be activated
  (press c to cancel): " SELECT
-	fi
-	if [[ ${SELECT,,} == "s" ]]; then
-		mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
-		echo " Applying changes..."
-		updateEngine
-		echo
-		read -p " Press Enter to continue..."
-		mainMenu
 	fi
 	if [[ ${SELECT,,} == "c" ]]; then
 		rm -rf /etc/dnsmasq/providers.tmp
 		mainMenu
 	fi
 	[[ -z $SELECT ]] && activateProvider
-	if [[ $(grep -E -c -w "^#${SELECT}" /etc/dnsmasq/providers.tmp) != 0 ]]; then
+	if [[ $(grep -E -c -w "^#${SELECT}" /etc/dnsmasq/providers.tmp) -ne 0 ]]; then
 		sed -E -i "s/^\#${SELECT}/${SELECT}/" /etc/dnsmasq/providers.tmp
 		activateProvider
 	else
-		echo -e " ${SELECT} is already active"
+		if [[ $(grep -E -c -w "^${SELECT}" /etc/dnsmasq/providers.tmp) -ne 0  ]]; then
+			echo -e " ${SELECT} is already active"
+		else
+			echo -e " ${SELECT} is not in the list"
+		fi
 	fi
 	echo
 	read -p " Press Enter to continue..."
@@ -307,28 +311,32 @@ function deactivateProvider() {
 	if [[ ! -z $(diff -q /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt) ]]; then
 		read -p " Select a provider to be activated
  (press s to save changes or c to cancel): " SELECT
+		if [[ ${SELECT,,} == "s" ]]; then
+			mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
+			echo " Applying changes..."
+			updateEngine
+			echo
+			read -p " Press Enter to continue..."
+			mainMenu
+		fi
 	else
 		read -p " Select a provider to be deactivated
  (press c to cancel): " SELECT
-	fi
-	if [[ ${SELECT,,} == "s" ]]; then
-		mv /etc/dnsmasq/providers.tmp /etc/dnsmasq/providers.txt
-		echo " Applying changes..."
-		updateEngine
-		echo
-		read -p " Press Enter to continue..."
-		mainMenu
 	fi
 	if [[ ${SELECT,,} == "c" ]]; then
 		rm -rf /etc/dnsmasq/providers.tmp
 		mainMenu
 	fi
 	[[ -z $SELECT ]] && deactivateProvider
-	if [[ $(grep -E -c -w "^#${SELECT}" /etc/dnsmasq/providers.tmp) == 0 ]]; then
+	if [[ $(grep -E -c -w "^${SELECT}" /etc/dnsmasq/providers.tmp) -ne 0 ]]; then
 		sed -E -i "s/^${SELECT}/\#${SELECT}/" /etc/dnsmasq/providers.tmp
 		deactivateProvider
 	else
-		echo -e " ${SELECT} is already inactive"
+		if [[ $(grep -E -c -w "^#${SELECT}" /etc/dnsmasq/providers.tmp) -ne 0  ]]; then
+			echo -e " ${SELECT} is already inactive"
+		else
+			echo -e " ${SELECT} is not in the list"
+		fi
 	fi
 	echo
 	read -p " Press Enter to continue..."
