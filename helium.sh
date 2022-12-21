@@ -95,7 +95,7 @@ function start() {
 		read -p $' Press Enter to continue...'
 		mainMenu
 	fi
-	systemctl enable dnsmasq
+	systemctl enable dnsmasq >/dev/null 2>&1
 	systemctl restart dnsmasq
 	sleep 2
 	echo -e -n " Starting Helium..."
@@ -114,7 +114,7 @@ function stop() {
 		echo
 		read -p " Do you want to stop Helium? [y/n]: " STOP
 		if [[ ${STOP,,} == "y" ]]; then
-			systemctl disable dnsmasq
+			systemctl disable dnsmasq >/dev/null 2>&1
 			systemctl stop dnsmasq
 			echo "nameserver 1.1.1.1" >/etc/resolv.conf
 			echo -e -n " Stopping Helium..."
