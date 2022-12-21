@@ -191,7 +191,7 @@ function uninstall() {
 		systemctl stop dnsmasq
 		systemctl disable dnsmasq
 		apt remove -y dnsmasq >/dev/null 2>&1
-		rm -rf /etc/dnsmasq.d
+		#rm -rf /etc/dnsmasq.d
 		rm -rf /etc/dnsmasq
 		>/etc/resolvconf/resolv.conf.d/original
 		>/etc/resolvconf/resolv.conf.d/head
