@@ -164,7 +164,7 @@ function reinstall() {
 	[[ ! -e /etc/dnsmasq ]] && mkdir -p /etc/dnsmasq
 	echo "nameserver 1.1.1.1" >/etc/resolv.conf
 	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
-	systemctl enable dnsmasq
+	systemctl enable dnsmasq >/dev/null 2>&1
 	rm -rf /etc/dnsmasq.conf
 	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
 	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
