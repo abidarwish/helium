@@ -360,20 +360,23 @@ function whitelistHost() {
 	if [[ ! -z $(diff -q /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts) ]]; then
 		read -p " Select a url from above to delete or type a new one to whitelist
  (press s to save changes or c to cancel): " SELECT
+		if [[ ${SELECT,,} == "s" ]]; then
+			mv /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts
+			updateEngine
+			echo
+			read -p " Press Enter to continue..."
+			mainMenu
+		fi
 	else
 		read -p " Select a url from above to delete or type a new one to whitelist
  (press c to cancel): " SELECT
 	fi
-	if [[ ${SELECT,,} == "s" ]]; then
-		mv /etc/dnsmasq/whitelist.hosts.tmp /etc/dnsmasq/whitelist.hosts
-		updateEngine
-		echo
-		read -p " Press Enter to continue..."
-		mainMenu
-	fi
 	if [[ ${SELECT,,} == "c" ]]; then
 		rm -rf /etc/dnsmasq/whitelist.hosts.tmp
 		mainMenu
+	fi
+	if [[ ${SELECT} == "s" ]]; then
+		whitelistHost
 	fi
 	[[ -z $SELECT ]] && whitelistHost
 	if [[ $(grep -c -w "${SELECT}" /etc/dnsmasq/whitelist.hosts.tmp) == 0 ]]; then
