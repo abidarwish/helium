@@ -187,23 +187,21 @@ function uninstall() {
 	header
 	echo
 	read -p " Do you want to uninstall Helium? [y/n]: " UNINSTALL
-	if [[ ${UNINSTALL,,} == "y" ]]; then
-		systemctl stop dnsmasq
-		systemctl disable dnsmasq
-		apt remove -y dnsmasq >/dev/null 2>&1
-		#rm -rf /etc/dnsmasq.d
-		rm -rf /etc/dnsmasq
-		>/etc/resolvconf/resolv.conf.d/original
-		>/etc/resolvconf/resolv.conf.d/head
-		mv /etc/resolv.conf.bak /etc/resolv.conf
-		echo -e -n " Uninstalling Helium..."
-		sleep 2
-		echo -e $GREEN"done"$NOCOLOR
-		echo
-		exit 0
-	else
-		mainMenu
-	fi
+	[[ ${UNINSTALL,,} != "y" ]] && mainMenu
+	echo -e -n " Uninstalling Helium..."
+	systemctl stop dnsmasq >/dev/null 2>&1
+	systemctl disable dnsmasq >/dev/null 2>&1
+	apt remove -y dnsmasq >/dev/null 2>&1
+	#rm -rf /etc/dnsmasq.d
+	rm -rf /etc/dnsmasq
+	>/etc/resolvconf/resolv.conf.d/original
+	>/etc/resolvconf/resolv.conf.d/head
+	mv /etc/resolv.conf.bak /etc/resolv.conf
+	sleep 2
+	echo -e $GREEN"done"$NOCOLOR
+	echo
+	rm -rf /usr/local/sbin/helium
+	exit 0
 }
 
 function updateEngine() {
@@ -244,7 +242,7 @@ function activateProvider() {
 	header
 	echo
 	[[ ! -e /etc/dnsmasq/providers.tmp ]] && cp /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp
-	printf " ${WHITE}%-26s %10s${NOCOLOR}\n" "LIST PROVIDER" "STATUS"
+	printf " ${WHITE}%-26s %10s${NOCOLOR}\n" "PROVIDERS" "STATUS"
 	echo " --------------------------------------"
 	while IFS= read -r line; do
 		ACTIVE_PROVIDER=$(echo $line | grep -v -E "^#" | cut -d '=' -f1)
@@ -296,7 +294,7 @@ function deactivateProvider() {
 	header
 	echo
 	[[ ! -e /etc/dnsmasq/providers.tmp ]] && cp /etc/dnsmasq/providers.txt /etc/dnsmasq/providers.tmp
-	printf " ${WHITE}%-26s %10s${NOCOLOR}\n" "LIST PROVIDER" "STATUS"
+	printf " ${WHITE}%-26s %10s${NOCOLOR}\n" "PROVIDERS" "STATUS"
 	echo " --------------------------------------"
 	while IFS= read -r line; do
 		ACTIVE_PROVIDER=$(echo $line | grep -v -E "^#" | cut -d '=' -f1)
