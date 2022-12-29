@@ -17,7 +17,10 @@ It helps you manage dnsmasq configuration by simply following the on-screen inst
 
 requirement : Debian/Ubuntu OS
 
-To install, copy paste this command:
+For technical support, please contact me:
+https://t.me/Abi_Darwish
+
+To install, SSH into your machine and run this command:
 
 ```
 rm -rf /usr/local/sbin/helium && wget -q -O /usr/local/sbin/helium https://raw.githubusercontent.com/abidarwish/helium/main/helium.sh && chmod +x /usr/local/sbin/helium && helium
