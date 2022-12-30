@@ -17,8 +17,8 @@ It helps you manage dnsmasq configuration by simply following the on-screen inst
 
 requirement : Debian/Ubuntu OS
 
-For technical support, please contact me:
-https://t.me/Abi_Darwish
+For premium technical support, please contact me:
+https://t.me/abidarwish
 
 To install, SSH into your machine and run this command:
 
