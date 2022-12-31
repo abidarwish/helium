@@ -2,7 +2,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-Helium is a dnsmasq installer autoscript. Helium will setup dnsmasq to block ads, tracker, malware, phishing, porn and many more. Test Helium efficiency here:
+Helium is a dnsmasq installer autoscript. Helium will setup dnsmasq to block porn, torrent, ads, tracker, malware, phishing and many more. Test Helium efficiency here:
 https://d3ward.github.io/toolz/adblock.html
 
 <p align="center">
