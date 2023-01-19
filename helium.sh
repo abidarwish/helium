@@ -95,10 +95,11 @@ function start() {
 		read -p $' Press Enter to continue...'
 		mainMenu
 	fi
+	echo -e -n " Starting Helium..."
+	echo "nameserver 127.0.0.1" >/etc/resolv.conf
 	systemctl enable dnsmasq >/dev/null 2>&1
 	systemctl restart dnsmasq
 	sleep 2
-	echo -e -n " Starting Helium..."
 	echo -e $GREEN"done"$NOCOLOR
 	echo
 	read -p $' Press Enter to continue...'
