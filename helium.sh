@@ -11,7 +11,7 @@ NOCOLOR="\e[0m"
 providers="/etc/dnsmasq/providers.txt"
 dnsmasqHostFinalList="/etc/dnsmasq/adblock.hosts"
 tempHostsList="/etc/dnsmasq/list.tmp"
-publicIP=$(wget -qO- ipv4.icanhazip.com)
+publicIP=$(ip -4 addr | sed -ne 's|^.* inet \([^/]*\)/.* scope global.*$|\1|p' | awk '{print $1}' | head -1)
 
 function header() {
 	echo -e $GREEN" $VERSIONNAME$VERSIONNUMBER" $NOCOLOR
