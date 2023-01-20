@@ -493,7 +493,6 @@ function mainMenu() {
 	RAM_USED=$(free -m | grep Mem: | awk '{print $3}')
 	TOTAL_RAM=$(free -m | grep Mem: | awk '{print $2}')
 	RAM_USAGE=$(echo "scale=2; ($RAM_USED / $TOTAL_RAM) * 100" | bc | cut -d. -f1)
-	DATE=$(date | awk '{print $2,$3,$4,$5,$6}')
 	UPTIME=$(uptime -p | sed 's/,//g' | awk '{print $2,$3", "$4,$5}')
 	DAILY_USAGE=$(vnstat -d --oneline | awk -F\; '{print $6}' | sed 's/ //')
 	MONTHLY_USAGE=$(vnstat -m --oneline | awk -F\; '{print $11}' | sed 's/ //')
@@ -505,7 +504,6 @@ function mainMenu() {
 	printf "\n %-25s %1s %-7s\e[0m" "OS Version" ":" "${OS}"
 	printf "\n %-25s %1s %-7s\e[0m" "Kernel Version" ":" "${KERNEL}"
 	printf "\n %-25s %1s %-7s\e[0m" "RAM Usage" ":" "${RAM_USED}MB / ${TOTAL_RAM}MB (${RAM_USAGE}%)"
-	printf "\n %-25s %1s %-7s\e[0m" "Date" ":" "${DATE}"
 	printf "\n %-25s %1s %-7s\e[0m" "Uptime" ":" "${UPTIME}"
 	printf "\n %-25s %1s %-7s\e[0m" "IP Address" ":" "${publicIP}"
 	printf "\n %-25s %1s %-7s\e[0m" "Daily Data Usage" ":" "${DAILY_USAGE}"
@@ -513,12 +511,12 @@ function mainMenu() {
 	echo
 	echo
 	echo -e $WHITE" Manage Helium"$NOCOLOR
-	echo -e " [01] Start Dnsmasq\t   [07] Whitelist host
- [02] Stop Dnsmasq\t   [08] Bypass Netflix
- [03] Update database\t   [09] Update Helium
- [04] Cleanup database\t   [10] Reinstall Helium
- [05] Activate provider\t   [11] Uninstall Helium
- [06] Deactivate provider  [12] Exit"
+	echo -e " [ 1] Start Dnsmasq\t   [ 7] Whitelist host
+ [ 2] Stop Dnsmasq\t   [ 8] Bypass Netflix
+ [ 3] Update database\t   [ 9] Update Helium
+ [ 4] Cleanup database\t   [10] Reinstall Helium
+ [ 5] Activate provider\t   [11] Uninstall Helium
+ [ 6] Deactivate provider  [12] Exit"
 	echo
 	read -p $' Enter option [1-12]: ' MENU_OPTION
 	case ${MENU_OPTION} in
