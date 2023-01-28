@@ -2,7 +2,7 @@
 #script by Abi Darwish
 
 VERSIONNAME="Helium v"
-VERSIONNUMBER="2.1"
+VERSIONNUMBER="2.2"
 GREEN="\e[1;32m"
 RED="\e[1;31m"
 WHITE="\e[1m"
@@ -459,10 +459,10 @@ function updateHelium() {
 	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
 	NEW_NAMESERVER=$(grep -w "server" /etc/dnsmasq.conf | awk -F'=' '{print $2}' | head -n 1)
 	sed -i "s/${NEW_NAMESERVER}/${OLD_NAMESERVER}" /etc/dnsmasq.conf
-	sleep 1
-	echo -e -n ${GREEN}"done"${NOCOLOR}
-	sleep 1
 	echo
+        updateEngine
+	#echo -e -n ${GREEN}"done"${NOCOLOR}
+	sleep 1
 	echo
 	echo -e " Type \e[1;32mhelium\e[0m to start"
 	echo
