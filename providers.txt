@@ -20,3 +20,5 @@
 #EasyList="https://easylist.to/easylist/easylist.txt"
 D3Host="https://raw.githubusercontent.com/d3ward/toolz/master/src/d3host.txt"
 AbiDarwishList="https://raw.githubusercontent.com/abidarwish/helium/main/AbiDarwishList.txt"
+MSSPornBlockList="https://raw.githubusercontent.com/mssvpn/block/main/porn.txt"
+MSSBlockList="https://raw.githubusercontent.com/mssvpn/block/main/blocklist.txt"
