@@ -64,7 +64,7 @@ function install() {
 		unlink /etc/resolv.conf
 		echo "nameserver 1.1.1.1" >/etc/resolv.conf
 	fi
-	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
+	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf bc
 	systemctl enable dnsmasq
 	mv /etc/dnsmasq.conf /etc/dnsmasq.conf.bak
 	rm -rf /etc/dnsmasq.conf
