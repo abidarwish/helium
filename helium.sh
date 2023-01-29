@@ -535,11 +535,11 @@ function updateHelium() {
 	fi
 	mv /tmp/helium.tmp /usr/local/sbin/helium
 	chmod 755 /usr/local/sbin/helium
-	# OLD_NAMESERVER=$(grep -w "server" /etc/dnsmasq.conf | awk -F'=' '{print $2}' | head -n 1)
+	OLD_NAMESERVER=$(grep -w "server" /etc/dnsmasq.conf | awk -F'=' '{print $2}' | head -n 1)
 	rm -rf /etc/dnsmasq.conf
 	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
-	# NEW_NAMESERVER=$(grep -w "server" /etc/dnsmasq.conf | awk -F'=' '{print $2}' | head -n 1)
-	# sed -i "s/${NEW_NAMESERVER}/${OLD_NAMESERVER}/" /etc/dnsmasq.conf
+	NEW_NAMESERVER=$(grep -w "server" /etc/dnsmasq.conf | awk -F'=' '{print $2}' | head -n 1)
+	sed -i "s/${NEW_NAMESERVER}/${OLD_NAMESERVER}/" /etc/dnsmasq.conf
 	rm -rf /usr/local/sbin/helium_daily
 	wget -q -O /usr/local/sbin/helium_daily "https://raw.githubusercontent.com/abidarwish/helium/main/helium_daily.sh"
 	chmod 755 /usr/local/sbin/helium_daily
