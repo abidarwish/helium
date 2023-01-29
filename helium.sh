@@ -548,6 +548,7 @@ function updateHelium() {
 	chmod 755 /usr/local/sbin/helium_daily
 	sed -i '/helium_daily/d' /etc/crontab
 	echo -e "0 4 * * * root helium_daily # Helium by Abi Darwish" >>/etc/crontab
+	echo
 	updateEngine
 	sleep 1
 	echo
