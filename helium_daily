@@ -26,3 +26,5 @@ function updateEngine() {
 	echo -e -n $GREEN" $(cat ${dnsmasqHostFinalList} | sed '/^$/d' | wc -l) "$NOCOLOR
 	echo -e "hostnames have been blocked"
 }
+
+updateEngine
