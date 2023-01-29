@@ -221,8 +221,7 @@ function customDNS() {
 	clear
 	header
 	echo
-	read -p " Type DNS IP address
- (press c to cancel): " NEW_DNS
+	read -p " Type DNS IP address (press c to cancel): " NEW_DNS
 	[[ ${NEW_DNS,,} == "c" ]] && DNSOption
 	[[ -z ${NEW_DNS} ]] && customDNS
 	PROVIDER=custom
