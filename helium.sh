@@ -72,6 +72,8 @@ function install() {
 	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
 	rm -rf ${providers}
 	wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
+        rm -rf /usr/local/sbin/helium_daily
+        wget -q -O /usr/local/sbin/helium_daily "https://raw.githubusercontent.com/abidarwish/helium/main/helium_daily"
 	sleep 1
 	updateEngine
 	>/etc/resolvconf/resolv.conf.d/original
@@ -171,7 +173,9 @@ function reinstall() {
 	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
 	rm -rf ${providers}
 	wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
-	updateEngine
+	rm -rf /usr/local/sbin/helium_daily
+        wget -q -O /usr/local/sbin/helium_daily "https://raw.githubusercontent.com/abidarwish/helium/main/helium_daily"
+        updateEngine
 	>/etc/resolvconf/resolv.conf.d/original
 	echo "nameserver 127.0.0.1" >/etc/resolv.conf
 	echo "nameserver 127.0.0.1" >/etc/resolvconf/resolv.conf.d/head
@@ -193,8 +197,8 @@ function uninstall() {
 	systemctl stop dnsmasq >/dev/null 2>&1
 	systemctl disable dnsmasq >/dev/null 2>&1
 	apt remove -y dnsmasq >/dev/null 2>&1
-	#rm -rf /etc/dnsmasq.d
 	rm -rf /etc/dnsmasq
+        rm -rf /usr/local/sbin/helium_daily
 	>/etc/resolvconf/resolv.conf.d/original
 	>/etc/resolvconf/resolv.conf.d/head
 	mv /etc/resolv.conf.bak /etc/resolv.conf
