@@ -173,13 +173,14 @@ function DNSOption() {
 }
 
 function changeDNS() {
-	echo -e " Changing to ${PROVIDER} DNS..."
+	echo -e -n " Changing to ${PROVIDER} DNS..."
 	OLD_DNS=$(grep -E -w "^server" /etc/dnsmasq.conf | cut -d '=' -f2)
 	# [[ ${NEW_DNS,,} == "c" ]] && mainMenu
 	# [[ -z ${NEW_DNS} ]] && changeDNS
 	sed -i "s/server=${OLD_DNS}/server=${NEW_DNS}/" /etc/dnsmasq.conf
 	systemctl restart dnsmasq
 	sleep 3
+	echo
 	echo -e -n " DNS server has been changed to "
 	echo -e -n $GREEN"${NEW_DNS}"$NOCOLOR
 	sleep 1
@@ -224,7 +225,7 @@ function customDNS() {
  (press c to cancel): " NEW_DNS
 	[[ ${NEW_DNS,,} == "c" ]] && DNSOption
 	[[ -z ${NEW_DNS} ]] && customDNS
-	PROVIDER=${NEW_DNS}
+	PROVIDER=custom
 	changeDNS
 }
 
@@ -624,7 +625,7 @@ function mainMenu() {
 		whitelistHost
 		;;
 	08 | 8)
-		changeDNS
+		DNSOption
 		;;
 	09 | 9)
 		updateHelium
