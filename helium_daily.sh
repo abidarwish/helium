@@ -1,6 +1,11 @@
 #!/bin/bash
 #script by Abi Darwish
 
+GREEN="\e[1;32m"
+RED="\e[1;31m"
+WHITE="\e[1m"
+NOCOLOR="\e[0m"
+
 providers="/etc/dnsmasq/providers.txt"
 dnsmasqHostFinalList="/etc/dnsmasq/adblock.hosts"
 tempHostsList="/etc/dnsmasq/list.tmp"

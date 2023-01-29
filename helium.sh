@@ -278,7 +278,7 @@ function uninstall() {
 	apt remove -y dnsmasq >/dev/null 2>&1
 	rm -rf /etc/dnsmasq
 	rm -rf /usr/local/sbin/helium_daily
-	sed '/helium_daily/d' /etc/crontab
+	sed -i '/helium_daily/d' /etc/crontab
 	>/etc/resolvconf/resolv.conf.d/original
 	>/etc/resolvconf/resolv.conf.d/head
 	mv /etc/resolv.conf.bak /etc/resolv.conf
