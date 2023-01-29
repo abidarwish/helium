@@ -75,6 +75,7 @@ function install() {
 	rm -rf /usr/local/sbin/helium_daily
 	wget -q -O /usr/local/sbin/helium_daily "https://raw.githubusercontent.com/abidarwish/helium/main/helium_daily.sh"
 	chmod 755 /usr/local/sbin/helium_daily
+	sed -i '/helium_daily/d' /etc/crontab
 	echo -e "0 4 * * * root helium_daily # Helium by Abi Darwish" >>/etc/crontab
 	updateEngine
 	>/etc/resolvconf/resolv.conf.d/original
@@ -249,7 +250,7 @@ function reinstall() {
 	rm -rf /usr/local/sbin/helium_daily
 	wget -q -O /usr/local/sbin/helium_daily "https://raw.githubusercontent.com/abidarwish/helium/main/helium_daily.sh"
 	chmod 755 /usr/local/sbin/helium_daily
-	sed '/helium_daily/d' /etc/crontab >/dev/null 2>&1
+	sed -i '/helium_daily/d' /etc/crontab
 	echo -e "0 4 * * * root helium_daily # Helium by Abi Darwish" >>/etc/crontab
     updateEngine
 	>/etc/resolvconf/resolv.conf.d/original >/dev/null 2>&1
@@ -545,7 +546,7 @@ function updateHelium() {
 	rm -rf /usr/local/sbin/helium_daily
 	wget -q -O /usr/local/sbin/helium_daily "https://raw.githubusercontent.com/abidarwish/helium/main/helium_daily.sh"
 	chmod 755 /usr/local/sbin/helium_daily
-	sed '/helium_daily/d' /etc/crontab
+	sed -i '/helium_daily/d' /etc/crontab
 	echo -e "0 4 * * * root helium_daily # Helium by Abi Darwish" >>/etc/crontab
 	updateEngine
 	sleep 1
