@@ -72,9 +72,10 @@ function install() {
 	sed -i "s/YourPublicIP/${publicIP}/" /etc/dnsmasq.conf
 	rm -rf ${providers}
 	wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
-        rm -rf /usr/local/sbin/helium_daily
-        wget -q -O /usr/local/sbin/helium_daily "https://raw.githubusercontent.com/abidarwish/helium/main/helium_daily"
-	sleep 1
+	rm -rf /usr/local/sbin/helium_daily
+	wget -q -O /usr/local/sbin/helium_daily "https://raw.githubusercontent.com/abidarwish/helium/main/helium_daily.sh"
+	chmod 755 /usr/local/sbin/helium_daily
+	echo -e "0 4 * * * root helium_daily # Helium by Abi Darwish" >>/etc/crontab
 	updateEngine
 	>/etc/resolvconf/resolv.conf.d/original
 	echo "nameserver 127.0.0.1" >/etc/resolv.conf
@@ -137,23 +138,94 @@ function stop() {
 	fi
 }
 
-function changeDNS() {
+function DNSOption() {
 	clear
 	header
 	echo
-	echo -e " Proxy server IP address to bypass Netflix"
-	read -p " (press c to cancel): " NEW_DNS
+	echo -e " ${WHITE}Change DNS${NOCOLOR}"
+	echo -e " [1] Google
+ [2] Cloudflare
+ [3] Adguard DNS
+ [4] Custom (bypass Netflix)
+ [5] Main menu"
+	echo
+	read -p $' Enter option [1-5]: ' MENU_OPTION
+	case ${MENU_OPTION} in
+	1)
+		googleDNS
+		;;
+	2)
+		CloudflareDNS
+		;;
+	3)
+		adguardDNS
+		;;
+	4)
+		customDNS
+		;;
+	5)
+		mainMenu
+		;;
+	*)
+		DNSOption
+		;;
+	esac
+}
+
+function changeDNS() {
+	echo -e " Changing to ${PROVIDER} DNS..."
 	OLD_DNS=$(grep -E -w "^server" /etc/dnsmasq.conf | cut -d '=' -f2)
-	[[ ${NEW_DNS,,} == "c" ]] && mainMenu
-	[[ -z ${NEW_DNS} ]] && changeDNS
+	# [[ ${NEW_DNS,,} == "c" ]] && mainMenu
+	# [[ -z ${NEW_DNS} ]] && changeDNS
 	sed -i "s/server=${OLD_DNS}/server=${NEW_DNS}/" /etc/dnsmasq.conf
 	systemctl restart dnsmasq
-	sleep 1
+	sleep 3
 	echo -e -n " DNS server has been changed to "
-	echo -e $GREEN"${NEW_DNS}"$NOCOLOR
+	echo -e -n $GREEN"${NEW_DNS}"$NOCOLOR
+	sleep 1
+	echo
 	echo
 	read -p " Press Enter to continue..."
-	mainMenu
+	DNSOption
+}
+
+function googleDNS() {
+	PROVIDER=Google
+	NEW_DNS="8.8.8.8"
+	clear
+	header
+	echo
+	changeDNS
+}
+
+function CloudflareDNS() {
+	PROVIDER=Cloudflare
+	NEW_DNS="1.1.1.1"
+	clear
+	header
+	echo
+	changeDNS
+}
+
+function adguardDNS() {
+	PROVIDER=Adguard
+	NEW_DNS="94.140.14.14"
+	clear
+	header
+	echo
+	changeDNS
+}
+
+function customDNS() {
+	clear
+	header
+	echo
+	read -p " Type DNS IP address
+ (press c to cancel): " NEW_DNS
+	[[ ${NEW_DNS,,} == "c" ]] && DNSOption
+	[[ -z ${NEW_DNS} ]] && customDNS
+	PROVIDER=${NEW_DNS}
+	changeDNS
 }
 
 function reinstall() {
@@ -174,8 +246,11 @@ function reinstall() {
 	rm -rf ${providers}
 	wget -q -O ${providers} "https://raw.githubusercontent.com/abidarwish/helium/main/providers.txt"
 	rm -rf /usr/local/sbin/helium_daily
-        wget -q -O /usr/local/sbin/helium_daily "https://raw.githubusercontent.com/abidarwish/helium/main/helium_daily"
-        updateEngine
+	wget -q -O /usr/local/sbin/helium_daily "https://raw.githubusercontent.com/abidarwish/helium/main/helium_daily.sh"
+	chmod 755 /usr/local/sbin/helium_daily
+	sed '/helium_daily/d' /etc/crontab
+	echo -e "0 4 * * * root helium_daily # Helium by Abi Darwish" >>/etc/crontab
+    updateEngine
 	>/etc/resolvconf/resolv.conf.d/original
 	echo "nameserver 127.0.0.1" >/etc/resolv.conf
 	echo "nameserver 127.0.0.1" >/etc/resolvconf/resolv.conf.d/head
@@ -198,7 +273,8 @@ function uninstall() {
 	systemctl disable dnsmasq >/dev/null 2>&1
 	apt remove -y dnsmasq >/dev/null 2>&1
 	rm -rf /etc/dnsmasq
-        rm -rf /usr/local/sbin/helium_daily
+	rm -rf /usr/local/sbin/helium_daily
+	sed '/helium_daily/d' /etc/crontab
 	>/etc/resolvconf/resolv.conf.d/original
 	>/etc/resolvconf/resolv.conf.d/head
 	mv /etc/resolv.conf.bak /etc/resolv.conf
@@ -463,9 +539,11 @@ function updateHelium() {
 	wget -q -O /etc/dnsmasq.conf "https://raw.githubusercontent.com/abidarwish/helium/main/dnsmasq.conf"
 	NEW_NAMESERVER=$(grep -w "server" /etc/dnsmasq.conf | awk -F'=' '{print $2}' | head -n 1)
 	sed -i "s/${NEW_NAMESERVER}/${OLD_NAMESERVER}" /etc/dnsmasq.conf
+	rm -rf /usr/local/sbin/helium_daily
+	wget -q -O /usr/local/sbin/helium_daily "https://raw.githubusercontent.com/abidarwish/helium/main/helium_daily.sh"
+	chmod 755 /usr/local/sbin/helium_daily
 	echo
-        updateEngine
-	#echo -e -n ${GREEN}"done"${NOCOLOR}
+	updateEngine
 	sleep 1
 	echo
 	echo -e " Type \e[1;32mhelium\e[0m to start"
@@ -516,7 +594,7 @@ function mainMenu() {
 	echo
 	echo -e $WHITE" Manage Helium"$NOCOLOR
 	echo -e " [ 1] Start Dnsmasq\t   [ 7] Whitelist host
- [ 2] Stop Dnsmasq\t   [ 8] Bypass Netflix
+ [ 2] Stop Dnsmasq\t   [ 8] Change DNS
  [ 3] Update database\t   [ 9] Update Helium
  [ 4] Cleanup database\t   [10] Reinstall Helium
  [ 5] Activate provider\t   [11] Uninstall Helium
