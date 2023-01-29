@@ -234,10 +234,11 @@ function reinstall() {
 	echo
 	read -p " Do you want to reinstall Helium? [y/n]: " REINSTALL
 	[[ ${REINSTALL,,} != "y" ]] && mainMenu
-	echo -e " Reinstalling Helium..."
+	echo -e -n " Reinstalling Helium..."
 	sleep 2
 	[[ ! -e /etc/dnsmasq ]] && mkdir -p /etc/dnsmasq
 	echo "nameserver 1.1.1.1" >/etc/resolv.conf
+	echo
 	apt update && apt install -y dnsmasq dnsutils vnstat resolvconf
 	systemctl enable dnsmasq >/dev/null 2>&1
 	rm -rf /etc/dnsmasq.conf
@@ -248,10 +249,10 @@ function reinstall() {
 	rm -rf /usr/local/sbin/helium_daily
 	wget -q -O /usr/local/sbin/helium_daily "https://raw.githubusercontent.com/abidarwish/helium/main/helium_daily.sh"
 	chmod 755 /usr/local/sbin/helium_daily
-	sed '/helium_daily/d' /etc/crontab
+	sed '/helium_daily/d' /etc/crontab >/dev/null 2>&1
 	echo -e "0 4 * * * root helium_daily # Helium by Abi Darwish" >>/etc/crontab
     updateEngine
-	>/etc/resolvconf/resolv.conf.d/original
+	>/etc/resolvconf/resolv.conf.d/original >/dev/null 2>&1
 	echo "nameserver 127.0.0.1" >/etc/resolv.conf
 	echo "nameserver 127.0.0.1" >/etc/resolvconf/resolv.conf.d/head
 	sleep 1
