@@ -256,8 +256,10 @@ function reinstall() {
 	echo "nameserver 127.0.0.1" >/etc/resolv.conf
 	echo "nameserver 127.0.0.1" >/etc/resolvconf/resolv.conf.d/head
 	sleep 1
-	echo -e " Installation completed"
+	echo -e -n " Installation completed"
 	sleep 1
+	echo
+	echo
 	echo -e " Type \e[1;32mhelium\e[0m to start"
 	echo
 	exit 0
