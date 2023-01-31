@@ -2,7 +2,7 @@
 #script by Abi Darwish
 
 VERSIONNAME="Helium v"
-VERSIONNUMBER="2.3.2"
+VERSIONNUMBER="2.4"
 GREEN="\e[1;32m"
 RED="\e[1;31m"
 WHITE="\e[1m"
@@ -252,7 +252,7 @@ function reinstall() {
 	chmod 755 /usr/local/sbin/helium_daily
 	sed -i '/helium_daily/d' /etc/crontab
 	echo -e "0 4 * * * root helium_daily # Helium by Abi Darwish" >>/etc/crontab
-    updateEngine
+	updateEngine
 	>/etc/resolvconf/resolv.conf.d/original >/dev/null 2>&1
 	echo "nameserver 127.0.0.1" >/etc/resolv.conf
 	echo "nameserver 127.0.0.1" >/etc/resolvconf/resolv.conf.d/head
@@ -565,12 +565,15 @@ function mainMenu() {
 	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
 		printf " %-25s %1s \e[1;32m%7s\e[0m" "Dnsmasq" ":" "running"
 		printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Active since" ":" "$(systemctl status dnsmasq.service | grep -w "Active" | awk '{print $9,$10,$11,$12}')"
+		NAMESERVER=$(grep -w -E "^server" /etc/dnsmasq.conf | head -n 1 | awk -F'=' '{print $2}')
+		printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Nameserver" ":" "$NAMESERVER"
+		printf "\n %-25s %1s \e[1;32m%'d\n\e[0m" "Blocked hostnames" ":" "$(cat ${dnsmasqHostFinalList} | wc -l)"
 	else
 		printf " %-25s %1s \e[1;31m%7s\e[0m" "Dnsmasq" ":" "stopped"
+		NAMESERVER=$(grep -w -E "^nameserver" /etc/resolv.conf | head -1 | awk '{print $2}')
+		printf "\n %-25s %1s ${RED}%7s${NOCOLOR}" "Nameserver" ":" "$NAMESERVER"
+		printf "\n %-25s %1s ${RED}%'d\n${NOCOLOR}" "Blocked hostnames" ":" "0"
 	fi
-	NAMESERVER=$(grep -w -E "^server" /etc/dnsmasq.conf | head -n 1 | awk -F'=' '{print $2}')
-	printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Nameserver" ":" "$NAMESERVER"
-	printf "\n %-25s %1s \e[1;32m%'d\n\e[0m" "Blocked hostnames" ":" "$(cat ${dnsmasqHostFinalList} | wc -l)"
 	echo
 	echo -e " \e[1mMachine Info\e[0m"
 	CPU=$(cat /proc/cpuinfo | grep "model\|Model" | tail -n 1 | awk -F: '{print $2}' | cut -d " " -f2-4)
@@ -608,31 +611,31 @@ function mainMenu() {
 	echo
 	read -p $' Enter option [1-12]: ' MENU_OPTION
 	case ${MENU_OPTION} in
-	01 | 1)
+	1)
 		start
 		;;
-	02 | 2)
+	2)
 		stop
 		;;
-	03 | 3)
+	3)
 		listUpdate
 		;;
-	04 | 4)
+	4)
 		cleaner
 		;;
-	05 | 5)
+	5)
 		activateProvider
 		;;
-	06 | 6)
+	6)
 		deactivateProvider
 		;;
-	07 | 7)
+	7)
 		whitelistHost
 		;;
-	08 | 8)
+	8)
 		DNSOption
 		;;
-	09 | 9)
+	9)
 		updateHelium
 		;;
 	10)
