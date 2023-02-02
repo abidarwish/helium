@@ -256,11 +256,14 @@ function reinstall() {
 	sed -i '/helium_daily/d' /etc/crontab
 	echo -e "0 4 * * * root helium_daily # Helium by Abi Darwish" >>/etc/crontab
 	updateEngine
-	>/etc/resolvconf/resolv.conf.d/original >/dev/null 2>&1
+	#>/etc/resolvconf/resolv.conf.d/original >/dev/null 2>&1
 	echo "nameserver 127.0.0.1" >/etc/resolv.conf
 	echo "nameserver 127.0.0.1" >/etc/resolvconf/resolv.conf.d/head
 	sleep 1
-	echo -e -n " Installation completed"
+        clear
+        header
+        echo
+	echo -e -n " Reinstallation completed"
 	sleep 1
 	echo
 	echo
