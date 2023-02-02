@@ -279,9 +279,10 @@ function uninstall() {
 	rm -rf /etc/dnsmasq
 	rm -rf /usr/local/sbin/helium_daily
 	sed -i '/helium_daily/d' /etc/crontab
-	>/etc/resolvconf/resolv.conf.d/original
+	#>/etc/resolvconf/resolv.conf.d/original
 	>/etc/resolvconf/resolv.conf.d/head
-	mv /etc/resolv.conf.bak /etc/resolv.conf
+	#mv /etc/resolv.conf.bak /etc/resolv.conf
+        echo -e "nameserver 1.1.1.1" >/etc/resolv.conf
 	sleep 2
 	echo -e $GREEN"done"$NOCOLOR
 	echo
