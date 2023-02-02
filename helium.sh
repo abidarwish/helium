@@ -78,10 +78,13 @@ function install() {
 	sed -i '/helium_daily/d' /etc/crontab
 	echo -e "0 4 * * * root helium_daily # Helium by Abi Darwish" >>/etc/crontab
 	updateEngine
-	>/etc/resolvconf/resolv.conf.d/original
+	#>/etc/resolvconf/resolv.conf.d/original
 	echo "nameserver 127.0.0.1" >/etc/resolv.conf
 	echo "nameserver 127.0.0.1" >/etc/resolvconf/resolv.conf.d/head
 	sleep 1
+        clear
+        header
+        echo
 	echo -e " Installation completed"
 	sleep 1
 	echo -e " Type \e[1;32mhelium\e[0m to start"
