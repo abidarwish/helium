@@ -4,7 +4,7 @@
 
 Helium is a dnsmasq installer autoscript. Helium will setup dnsmasq to block porn, torrent, ads, tracker, malware, phishing and many more. Test Helium efficiency at [d3ward](https://d3ward.github.io/toolz/adblock.html).
 <p align="center">
-  <img src="d3ward.png">
+  <img src="d3ward2.png">
 </p>
 
 ### Friendly CLI
@@ -12,7 +12,7 @@ Helium is a dnsmasq installer autoscript. Helium will setup dnsmasq to block por
 It helps you manage dnsmasq configuration by simply following the on-screen instructions as easy as 1, 2, 3.
 
 <p align="center">
-  <img src="menu.png">
+  <img src="menu2.png">
 </p>
 
 ### Requirement
