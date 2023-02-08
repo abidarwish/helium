@@ -18,9 +18,9 @@ It helps you manage dnsmasq configuration by simply following the on-screen inst
 
 ### Requirement
 
-Debian/Ubuntu OS
+Debian/Ubuntu server with Xray VPN (Vmess/Vless/Trojan) already installed. Get [Silk Road](https://github.com/abidarwish/silkroad) for a complete solution if you don't have Xray VPN yet.
 
-Use this referral code and get €25 free credit to deploy a fresh Debian/Ubuntu server:
+Use this referral code and get €25 free credit to deploy a fresh Ubuntu server to install [Silk Road](https://github.com/abidarwish/silkroad):
 https://upcloud.com/signup/?promo=7J3Z69
 
 For premium technical support, please contact [Abi Darwish](https://t.me/abidarwish).
