@@ -24,3 +24,4 @@ AbiDarwishYTList="https://raw.githubusercontent.com/abidarwish/helium/main/AbiDa
 MSSYTBlockList="https://raw.githubusercontent.com/mssvpn/block/main/ytlist.txt"
 Jerryn70="https://raw.githubusercontent.com/jerryn70/GoodbyeAds/master/Formats/GoodbyeAds-YouTube-AdBlock-Filter.txt"
 TheQuantumAlpha="https://gitlab.com/The_Quantum_Alpha/the-quantum-ad-list/-/raw/master/Individual%20lists/The_Quantum_Youtube-Ads-List.txt"
+Kboghdady="https://raw.githubusercontent.com/kboghdady/youTube_ads_4_pi-hole/master/youtubelist.txt"
