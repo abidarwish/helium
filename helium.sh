@@ -301,9 +301,9 @@ function updateEngine() {
 	>${tempHostsList}
 	while IFS= read -r line; do
 		list_url=$(echo $line | grep -E -v "^#" | cut -d '"' -f2)
-		curl "${list_url}" 2>/dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" >>${tempHostsList}
-	sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | sed '/^$/d' | sed 's/^0.0.0.0 //g' | sed 's/^/0.0.0.0 /g' | grep -E "^0.0.0.0"
-done <${providers}
+		#curl "${list_url}" 2>/dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" >>${tempHostsList}
+		curl "${list_url}" 2>/dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | sed '/^$/d' | sed 's/^0.0.0.0 //g' | sed 's/^/0.0.0.0 /g' | grep -E "^0.0.0.0" >>${tempHostsList}
+	done <${providers}
 	[[ ! -z $(ip a | grep -w "inet6") ]] && grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >>${tempHostsList}
 	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0|^::1 0.0.0.0/d' | sort | uniq >${dnsmasqHostFinalList}
 	[[ ! -e /etc/dnsmasq/whitelist.hosts ]] && touch /etc/dnsmasq/whitelist.hosts
