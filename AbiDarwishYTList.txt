@@ -88,6 +88,7 @@
 0.0.0.0 rr2---sn-npoe7nlz.googlevideo.com
 0.0.0.0 rr2---sn-npoe7ns6.googlevideo.com
 0.0.0.0 rr2---sn-npoe7ns7.googlevideo.com
+0.0.0.0 rr2---sn-npoe7nsd.googlevideo.com
 0.0.0.0 rr2---sn-npoe7nsk.googlevideo.com
 0.0.0.0 rr2---sn-npoe7nsr.googlevideo.com
 0.0.0.0 rr2---sn-npoe7nss.googlevideo.com
