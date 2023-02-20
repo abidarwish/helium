@@ -266,5 +266,3 @@
 0.0.0.0 rr5---sn-npoldn7y.googlevideo.com
 0.0.0.0 rr5---sn-npoldn7z.googlevideo.com
 0.0.0.0 rr5---sn-npoldne7.googlevideo.com
-0.0.0.0 yt3.ggpht.com
-# abidarwish
