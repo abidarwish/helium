@@ -26,3 +26,4 @@ AbiDarwishList="https://raw.githubusercontent.com/abidarwish/helium/main/AbiDarw
 #TheQuantumAlpha="https://gitlab.com/The_Quantum_Alpha/the-quantum-ad-list/-/raw/master/Individual%20lists/The_Quantum_Youtube-Ads-List.txt"
 #KboghdadyYT="https://raw.githubusercontent.com/kboghdady/youTube_ads_4_pi-hole/master/youtubelist.txt"
 #91ajqmesYT="https://raw.githubusercontent.com/91ajames/ublock-filters-ulist-youtube/main/per-device-youtube-googlevideo-ad-block.txt"
+BlocklistProjectTorrent="https://blocklistproject.github.io/Lists/torrent.txt"
