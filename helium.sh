@@ -176,10 +176,10 @@ function DNSOption() {
 	6)
 		quad9
 		;;
-	4)
+	7)
 		customDNS
 		;;
-	5)
+	8)
 		mainMenu
 		;;
 	*)
