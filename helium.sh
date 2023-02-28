@@ -2,7 +2,7 @@
 #script by Abi Darwish
 
 VERSIONNAME="Helium v"
-VERSIONNUMBER="2.4.3"
+VERSIONNUMBER="2.5"
 GREEN="\e[1;32m"
 RED="\e[1;31m"
 WHITE="\e[1m"
@@ -96,6 +96,8 @@ function start() {
 	clear
 	header
 	echo
+        heliumStatus
+        echo
 	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
 		echo -e $GREEN" Helium is already running"$NOCOLOR
 		echo
@@ -117,6 +119,8 @@ function stop() {
 	clear
 	header
 	echo
+        heliumStatus
+        echo
 	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
 		echo -e $GREEN" Helium is running"$NOCOLOR
 		echo
@@ -146,6 +150,8 @@ function DNSOption() {
 	clear
 	header
 	echo
+        heliumStatus
+        echo
 	echo -e " ${WHITE}Change DNS${NOCOLOR}"
 	echo -e " [1] Google
  [2] Cloudflare
@@ -318,10 +324,30 @@ function updateEngine() {
 	echo -e "hostnames have been blocked"
 }
 
+function heliumStatus() {
+	HELIUM_NAMESERVER=$(grep -E "^server" /etc/dnsmasq.conf | head -1 | awk -F= '{print $2}')
+	BLOCKED_HOSTNAME=$(cat ${DNSMASQ_HOST_FINAL_LIST} | wc -l)
+	NAMESERVER=$(grep -E "^nameserver" /etc/resolv.conf | head -1 | awk '{print $2}')
+	ACTIVE_SINCE=$(systemctl status dnsmasq.service | sed -ne 's|^.*active (running).*; \(.*\)$|\1|p')
+	echo -e " ${WHITE}Helium Status${NOCOLOR}"
+	if [[ $(systemctl is-active dnsmasq) == active ]]; then
+        printf " %-25s %1s ${GREEN}%7s${NOCOLOR}" "DNSMasq" ":" "running"
+        printf "\n %-25s %1s ${GREEN}%7s${NOCOLOR}" "Nameserver" ":" "${HELIUM_NAMESERVER}"
+        printf "\n %-25s %1s ${GREEN}%'d${NOCOLOR}" "Blocked Hostnames" ":" "${BLOCKED_HOSTNAME}"
+		printf "\n %-25s %1s ${GREEN}%-7s\n${NOCOLOR}" "Active since" ":" "${ACTIVE_SINCE}"
+    else
+        printf " %-25s %1s ${RED}%7s${NOCOLOR}" "DNSMasq" ":" "stopped"
+        printf "\n %-25s %1s ${RED}%7s${NOCOLOR}" "Nameserver" ":" "${NAMESERVER}"
+        printf "\n %-25s %1s ${RED}%'d\n${NOCOLOR}" "Blocked hostnames" ":" "0"
+    fi
+}
+
 function listUpdate() {
 	clear
 	header
 	echo
+        heliumStatus
+        echo
 	read -p " Do you want to update blocked hostnames? [y/n]: " UPDATE
 	[[ ${UPDATE,,} != "y" ]] && mainMenu
 	updateEngine
@@ -489,6 +515,8 @@ function cleaner() {
 	clear
 	header
 	echo
+        heliumStatus
+        echo
 	read -p " Do you want to cleanup the database? [y/n]: " CLEANUP
 	[[ ${CLEANUP,,} != "y" ]] && mainMenu
 	OLD_DATABASE=$(cat /etc/dnsmasq/adblock.hosts | sed '/^$/d' | wc -l)
