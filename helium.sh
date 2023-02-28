@@ -630,19 +630,6 @@ function mainMenu() {
 	clear
 	header
 	echo
-	echo -e " \e[1mSystem Status\e[0m"
-# 	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
-# 		printf " %-25s %1s \e[1;32m%7s\e[0m" "Dnsmasq" ":" "running"
-# 		printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Active since" ":" "$(systemctl status dnsmasq.service | grep -w "Active" | awk '{print $9,$10,$11,$12}')"
-# 		NAMESERVER=$(grep -w -E "^server" /etc/dnsmasq.conf | head -n 1 | awk -F'=' '{print $2}')
-# 		printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Nameserver" ":" "$NAMESERVER"
-# 		printf "\n %-25s %1s \e[1;32m%'d\n\e[0m" "Blocked hostnames" ":" "$(cat ${dnsmasqHostFinalList} | wc -l)"
-# 	else
-# 		printf " %-25s %1s \e[1;31m%7s\e[0m" "Dnsmasq" ":" "stopped"
-# 		NAMESERVER=$(grep -w -E "^nameserver" /etc/resolv.conf | head -1 | awk '{print $2}')
-# 		printf "\n %-25s %1s ${RED}%7s${NOCOLOR}" "Nameserver" ":" "$NAMESERVER"
-# 		printf "\n %-25s %1s ${RED}%'d\n${NOCOLOR}" "Blocked hostnames" ":" "0"
-# 	fi
 	heliumStatus
 	echo
 	echo -e " \e[1mMachine Info\e[0m"
