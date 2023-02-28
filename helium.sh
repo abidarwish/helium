@@ -99,8 +99,6 @@ function start() {
         heliumStatus
         echo
 	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
-		echo -e $GREEN" Helium is already running"$NOCOLOR
-		echo
 		read -p $' Press Enter to continue...'
 		mainMenu
 	fi
@@ -122,8 +120,6 @@ function stop() {
         heliumStatus
         echo
 	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
-		echo -e $GREEN" Helium is running"$NOCOLOR
-		echo
 		read -p " Do you want to stop Helium? [y/n]: " STOP
 		if [[ ${STOP,,} == "y" ]]; then
 			systemctl disable dnsmasq >/dev/null 2>&1
@@ -139,8 +135,6 @@ function stop() {
 			mainMenu
 		fi
 	else
-		echo -e $RED" Helium is already stopped"$NOCOLOR
-		echo
 		read -p " Press Enter to continue..."
 		mainMenu
 	fi
@@ -155,20 +149,32 @@ function DNSOption() {
 	echo -e " ${WHITE}Change DNS${NOCOLOR}"
 	echo -e " [1] Google
  [2] Cloudflare
- [3] Adguard DNS
- [4] Custom (bypass Netflix)
- [5] Main menu"
+ [3] Cloudflare for Families
+ [4] Adguard DNS
+ [5] Adguard Family
+ [6] Quad9
+ [7] Custom (bypass Netflix)
+ [8] Main menu"
 	echo
-	read -p $' Enter option [1-5]: ' MENU_OPTION
+	read -p $' Enter option [1-8]: ' MENU_OPTION
 	case ${MENU_OPTION} in
 	1)
 		googleDNS
 		;;
 	2)
-		CloudflareDNS
+		cloudflareDNS
 		;;
 	3)
+		cloudflareForFamilies
+		;;
+	4)
 		adguardDNS
+		;;
+	5)
+		adguardFamily
+		;;
+	6)
+		quad9
 		;;
 	4)
 		customDNS
@@ -209,9 +215,18 @@ function googleDNS() {
 	changeDNS
 }
 
-function CloudflareDNS() {
+function cloudflareDNS() {
 	PROVIDER=Cloudflare
 	NEW_DNS="1.1.1.1"
+	clear
+	header
+	echo
+	changeDNS
+}
+
+function cloudflareForFamilies() {
+	PROVIDER="Cloudflare for Families"
+	NEW_DNS="1.1.1.3"
 	clear
 	header
 	echo
@@ -221,6 +236,24 @@ function CloudflareDNS() {
 function adguardDNS() {
 	PROVIDER=Adguard
 	NEW_DNS="94.140.14.14"
+	clear
+	header
+	echo
+	changeDNS
+}
+
+function adguardFamily() {
+	PROVIDER="Adguard Family"
+	NEW_DNS="94.140.14.15"
+	clear
+	header
+	echo
+	changeDNS
+}
+
+function quad9() {
+	PROVIDER="Quad 9"
+	NEW_DNS="9.9.9.9"
 	clear
 	header
 	echo
@@ -308,7 +341,7 @@ function updateEngine() {
 	while IFS= read -r line; do
 		list_url=$(echo $line | grep -E -v "^#" | cut -d '"' -f2)
 		#curl "${list_url}" 2>/dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | grep -E "^0.0.0.0" >>${tempHostsList}
-		curl "${list_url}" 2>/dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | awk -F '^' '{print $1}' | sed '/^$/d' | sed 's/^0.0.0.0 //g' | sed 's/^/0.0.0.0 /g' | grep -E "^0.0.0.0" >>${tempHostsList}
+		curl "${list_url}" 2>/dev/null | sed -E '/^!/d' | sed '/#/d' | sed -E 's/^\|\|/0.0.0.0 /g' | sed 's/^127.0.0.1 //g' | awk -F '^' '{print $1}' | sed '/^$/d' | sed 's/^0.0.0.0 //g' | sed 's/^/0.0.0.0 /g' | grep -E "^0.0.0.0" >>${tempHostsList}
 	done <${providers}
 	[[ ! -z $(ip a | grep -w "inet6") ]] && grep -E "^0.0.0.0" ${tempHostsList} | sed -E 's/^0.0.0.0/::1/g' >>${tempHostsList}
 	cat ${tempHostsList} | sed '/^$/d' | sed -E '/^0.0.0.0 0.0.0.0|^::1 0.0.0.0/d' | sort | uniq >${dnsmasqHostFinalList}
@@ -331,15 +364,15 @@ function heliumStatus() {
 	ACTIVE_SINCE=$(systemctl status dnsmasq.service | sed -ne 's|^.*active (running).*; \(.*\)$|\1|p')
 	echo -e " ${WHITE}Helium Status${NOCOLOR}"
 	if [[ $(systemctl is-active dnsmasq) == active ]]; then
-        printf " %-25s %1s ${GREEN}%7s${NOCOLOR}" "DNSMasq" ":" "running"
-        printf "\n %-25s %1s ${GREEN}%7s${NOCOLOR}" "Nameserver" ":" "${HELIUM_NAMESERVER}"
-        printf "\n %-25s %1s ${GREEN}%'d${NOCOLOR}" "Blocked Hostnames" ":" "${BLOCKED_HOSTNAME}"
+        	printf " %-25s %1s ${GREEN}%7s${NOCOLOR}" "DNSMasq" ":" "running"
+        	printf "\n %-25s %1s ${GREEN}%7s${NOCOLOR}" "Nameserver" ":" "${HELIUM_NAMESERVER}"
+        	printf "\n %-25s %1s ${GREEN}%'d${NOCOLOR}" "Blocked Hostnames" ":" "${BLOCKED_HOSTNAME}"
 		printf "\n %-25s %1s ${GREEN}%-7s\n${NOCOLOR}" "Active since" ":" "${ACTIVE_SINCE}"
-    else
-        printf " %-25s %1s ${RED}%7s${NOCOLOR}" "DNSMasq" ":" "stopped"
-        printf "\n %-25s %1s ${RED}%7s${NOCOLOR}" "Nameserver" ":" "${NAMESERVER}"
-        printf "\n %-25s %1s ${RED}%'d\n${NOCOLOR}" "Blocked hostnames" ":" "0"
-    fi
+	else
+        	printf " %-25s %1s ${RED}%7s${NOCOLOR}" "DNSMasq" ":" "stopped"
+        	printf "\n %-25s %1s ${RED}%7s${NOCOLOR}" "Nameserver" ":" "${NAMESERVER}"
+        	printf "\n %-25s %1s ${RED}%'d\n${NOCOLOR}" "Blocked hostnames" ":" "0"
+	fi
 }
 
 function listUpdate() {
@@ -598,18 +631,19 @@ function mainMenu() {
 	header
 	echo
 	echo -e " \e[1mSystem Status\e[0m"
-	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
-		printf " %-25s %1s \e[1;32m%7s\e[0m" "Dnsmasq" ":" "running"
-		printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Active since" ":" "$(systemctl status dnsmasq.service | grep -w "Active" | awk '{print $9,$10,$11,$12}')"
-		NAMESERVER=$(grep -w -E "^server" /etc/dnsmasq.conf | head -n 1 | awk -F'=' '{print $2}')
-		printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Nameserver" ":" "$NAMESERVER"
-		printf "\n %-25s %1s \e[1;32m%'d\n\e[0m" "Blocked hostnames" ":" "$(cat ${dnsmasqHostFinalList} | wc -l)"
-	else
-		printf " %-25s %1s \e[1;31m%7s\e[0m" "Dnsmasq" ":" "stopped"
-		NAMESERVER=$(grep -w -E "^nameserver" /etc/resolv.conf | head -1 | awk '{print $2}')
-		printf "\n %-25s %1s ${RED}%7s${NOCOLOR}" "Nameserver" ":" "$NAMESERVER"
-		printf "\n %-25s %1s ${RED}%'d\n${NOCOLOR}" "Blocked hostnames" ":" "0"
-	fi
+# 	if [[ $(systemctl is-active dnsmasq) == "active" ]]; then
+# 		printf " %-25s %1s \e[1;32m%7s\e[0m" "Dnsmasq" ":" "running"
+# 		printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Active since" ":" "$(systemctl status dnsmasq.service | grep -w "Active" | awk '{print $9,$10,$11,$12}')"
+# 		NAMESERVER=$(grep -w -E "^server" /etc/dnsmasq.conf | head -n 1 | awk -F'=' '{print $2}')
+# 		printf "\n %-25s %1s \e[1;32m%7s\e[0m" "Nameserver" ":" "$NAMESERVER"
+# 		printf "\n %-25s %1s \e[1;32m%'d\n\e[0m" "Blocked hostnames" ":" "$(cat ${dnsmasqHostFinalList} | wc -l)"
+# 	else
+# 		printf " %-25s %1s \e[1;31m%7s\e[0m" "Dnsmasq" ":" "stopped"
+# 		NAMESERVER=$(grep -w -E "^nameserver" /etc/resolv.conf | head -1 | awk '{print $2}')
+# 		printf "\n %-25s %1s ${RED}%7s${NOCOLOR}" "Nameserver" ":" "$NAMESERVER"
+# 		printf "\n %-25s %1s ${RED}%'d\n${NOCOLOR}" "Blocked hostnames" ":" "0"
+# 	fi
+	heliumStatus
 	echo
 	echo -e " \e[1mMachine Info\e[0m"
 	CPU=$(cat /proc/cpuinfo | grep "model\|Model" | tail -n 1 | awk -F: '{print $2}' | cut -d " " -f2-4)
