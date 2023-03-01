@@ -361,7 +361,7 @@ function heliumStatus() {
 	BLOCKED_HOSTNAME=$(cat ${dnsmasqHostFinalList} | wc -l)
 	NAMESERVER=$(grep -E "^nameserver" /etc/resolv.conf | head -1 | awk '{print $2}')
 	ACTIVE_SINCE=$(systemctl status dnsmasq.service | sed -ne 's|^.*active (running).*; \(.*\)$|\1|p')
-	echo -e " ${WHITE}Helium Status${NOCOLOR}"
+	echo -e " ${WHITE}System Status${NOCOLOR}"
 	if [[ $(systemctl is-active dnsmasq) == active ]]; then
         	printf " %-25s %1s ${GREEN}%7s${NOCOLOR}" "DNSMasq" ":" "running"
         	printf "\n %-25s %1s ${GREEN}%7s${NOCOLOR}" "Nameserver" ":" "${HELIUM_NAMESERVER}"
