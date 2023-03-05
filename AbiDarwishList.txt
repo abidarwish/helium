@@ -1,3 +1,9 @@
+0.0.0.0 app-measurement.com
+0.0.0.0 mtalk.google.com
+0.0.0.0 redirector.googlevideo.com
+0.0.0.0 yt3.googleusercontent.com
+0.0.0.0 suggestqueries.google.com
+0.0.0.0 s.youtube.com
 ||xhamster.com
 ||rapbeh.net^
 ||kantotflix.com^
