@@ -2,7 +2,7 @@
 #script by Abi Darwish
 
 VERSIONNAME="Helium v"
-VERSIONNUMBER="2.5"
+VERSIONNUMBER="3.0"
 GREEN="\e[1;32m"
 RED="\e[1;31m"
 WHITE="\e[1m"
@@ -102,9 +102,9 @@ function start() {
 		mainMenu
 	fi
 	echo -e -n " Starting Helium..."
-	echo "nameserver 127.0.0.1" >/etc/resolv.conf
 	systemctl enable dnsmasq >/dev/null 2>&1
 	systemctl restart dnsmasq
+	echo "nameserver 127.0.0.1" >/etc/resolv.conf
 	sleep 2
 	echo -e $GREEN"done"$NOCOLOR
 	echo
@@ -554,8 +554,8 @@ function cleaner() {
 	OLD_DATABASE=$(cat /etc/dnsmasq/adblock.hosts | sed '/^$/d' | wc -l)
 	echo -e -n " Checking database..."
 	sleep 2
-	rm -rf /etc/dnsmasq/dead.hosts
-	wget -q -O /etc/dnsmasq/dead.hosts "https://raw.githubusercontent.com/abidarwish/helium/main/dead.hosts"
+	#rm -rf /etc/dnsmasq/dead.hosts
+	#wget -q -O /etc/dnsmasq/dead.hosts "https://raw.githubusercontent.com/abidarwish/helium/main/dead.hosts"
 	DATA=$(awk '{print $1}' /etc/dnsmasq/dead.hosts)
 	for URL in ${DATA}; do
 		sed -E -i "/^0.0.0.0 ${URL}$|^::1 ${URL}$/d" /etc/dnsmasq/adblock.hosts
@@ -658,14 +658,13 @@ function mainMenu() {
 	echo
 	echo
 	echo -e $WHITE" Manage Helium"$NOCOLOR
-	echo -e " [ 1] Start Dnsmasq\t   [ 7] Whitelist host
- [ 2] Stop Dnsmasq\t   [ 8] Change DNS
- [ 3] Update database\t   [ 9] Update Helium
- [ 4] Cleanup database\t   [10] Reinstall Helium
- [ 5] Activate provider\t   [11] Uninstall Helium
- [ 6] Deactivate provider  [12] Exit"
+	echo -e " [ 1] Start Dnsmasq\t   [ 6] Whitelist host
+ [ 2] Stop Dnsmasq\t   [ 7] Change DNS
+ [ 3] Update database\t   [ 8] Update Helium
+ [ 4] Activate provider\t   [ 9] Uninstall Helium
+ [ 5] Deactivate provider  [10] Exit"
 	echo
-	read -p $' Enter option [1-12]: ' MENU_OPTION
+	read -p $' Enter option [1-10]: ' MENU_OPTION
 	case ${MENU_OPTION} in
 	1)
 		start
@@ -677,30 +676,24 @@ function mainMenu() {
 		listUpdate
 		;;
 	4)
-		cleaner
-		;;
-	5)
 		activateProvider
 		;;
-	6)
+	5)
 		deactivateProvider
 		;;
-	7)
+	6)
 		whitelistHost
 		;;
-	8)
+	7)
 		DNSOption
 		;;
-	9)
+	8)
 		updateHelium
 		;;
-	10)
-		reinstall
-		;;
-	11)
+	9)
 		uninstall
 		;;
-	12)
+	10)
 		exit 0
 		;;
 	*)
