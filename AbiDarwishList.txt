@@ -1,9 +1,8 @@
-#0.0.0.0 app-measurement.com
-#0.0.0.0 mtalk.google.com
-#0.0.0.0 redirector.googlevideo.com
-#0.0.0.0 yt3.googleusercontent.com
-#0.0.0.0 suggestqueries.google.com
-#0.0.0.0 s.youtube.com
+||s0.2mdn.net
+||s1.2mdn.net
+||s2.2mdn.net
+||s3.2mdn.net
+||s4.2mdn.net
 ||xhamster.com
 ||rapbeh.net^
 ||kantotflix.com^
