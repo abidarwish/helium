@@ -6,9 +6,9 @@ RED="\e[1;31m"
 WHITE="\e[1m"
 NOCOLOR="\e[0m"
 
-providers="/etc/dnsmasq/providers.txt"
-dnsmasqHostFinalList="/etc/dnsmasq/adblock.hosts"
-tempHostsList="/etc/dnsmasq/list.tmp"
+PROVIDERS="/etc/dnsmasq/providers.txt"
+DNSMASQ_HOST_FINAL_LIST="/etc/dnsmasq/adblock.hosts"
+TEMP_HOSTS_LIST="/etc/dnsmasq/list.tmp"
 
 function updateEngine() {
 	echo -e -n " Updating blocked hostnames..."
@@ -22,8 +22,7 @@ function updateEngine() {
 	[[ ! -e /etc/dnsmasq/whitelist.hosts ]] && touch /etc/dnsmasq/whitelist.hosts
 	DATA=$(cat /etc/dnsmasq/whitelist.hosts)
 	for HOSTNAME in ${DATA}; do
-		sed -E -i "/0.0.0.0 ${HOSTNAME}/d" /etc/dnsmasq/adblock.hosts
-                sed -E -i "/:: ${HOSTNAME}/d" /etc/dnsmasq/adblock.hosts
+		sed -E -i "/${HOSTNAME}/d" /etc/dnsmasq/adblock.hosts
 	done
 	[[ ! -e /etc/dnsmasq/blacklist.hosts ]] && touch /etc/dnsmasq/blacklist.hosts
 	DATA=$(cat /etc/dnsmasq/blacklist.hosts)
