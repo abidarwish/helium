@@ -25,4 +25,4 @@ BlocklistProjectTorrent="https://raw.githubusercontent.com/mss-col/hosts/main/Bl
 BlocklistProjectTracker="https://raw.githubusercontent.com/mss-col/hosts/main/BlocklistProjectTracker_Active.txt"
 BlocklistProjectRedirect="https://raw.githubusercontent.com/mss-col/hosts/main/BlocklistProjectRedirect_Active.txt"
 BlocklistProjectGambling="https://raw.githubusercontent.com/mss-col/hosts/main/BlocklistProjectGambling_Active.txt"
-Tiktok="https://github.com/blocklistproject/Lists/blob/master/tiktok.txt"
+Tiktok="https://raw.githubusercontent.com/blocklistproject/Lists/refs/heads/master/tiktok.txt"
